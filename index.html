@@ -558,15 +558,9 @@
   .guide-row:last-child { border-bottom: none; }
   .guide-row h3 { font-size: 16px; font-weight: 800; color: var(--ink); }
   .guide-row p { margin-top: 3px; max-width: 62ch; color: var(--text-muted); text-wrap: pretty; }
-  .guide-viewer { position: fixed; inset: 0; z-index: 2100; display: flex; flex-direction: column; background: var(--surface); }
-  .guide-viewer[hidden] { display: none; }
-  .guide-viewer-bar { display: flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 8px 0 20px; background-color: var(--ink); background-image: var(--bar-lines); color: #ffffff; }
-  .guide-viewer-bar h2 { flex: 1; min-width: 0; font-size: 17px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .guide-viewer-bar .icon-button { color: #ffffff; }
-  .guide-viewer-bar .icon-button:hover { background: var(--ink-raised); }
-  .guide-viewer-bar :focus-visible { outline-color: var(--gold); }
-  .guide-frame { flex: 1; width: 100%; border: none; background: #ffffff; }
-  body.has-guide-open { overflow: hidden; }
+  .guide-row a.btn { text-decoration: none; }
+  .guide-note { padding: 14px 20px 16px; background: var(--surface-tint); font-size: 14px; color: var(--text-muted); text-wrap: pretty; }
+  .guide-note strong { color: var(--text); }
 
   @media (max-width: 760px) {
     .dialog-head { padding: 18px 16px 0; }
@@ -581,7 +575,7 @@
     .pagination-controls { justify-content: center; }
     .page-buttons { flex-wrap: wrap; justify-content: center; }
     .guide-row { flex-direction: column; align-items: stretch; }
-    .guide-new-tab { display: none; }
+    .guide-note { padding: 12px 16px 14px; }
     .request-actions.has-choice .btn { padding: 0 8px; }
   }
 
@@ -1183,7 +1177,7 @@
       <section id="view-guides" hidden><div class="guides-area">
   <div class="page-head">
     <h1>Guides</h1>
-    <p>For admins only. These open after you sign in and never appear on the public page.</p>
+    <p>For admins only. They open after you sign in and never appear on the public page.</p>
   </div>
   <section class="sheet">
     <h2 class="sheet-title">Manuals</h2>
@@ -1192,15 +1186,16 @@
         <h3>Admin manual</h3>
         <p>Signing in, approving requests, correcting records and photos, and printing IDs, with pictures of every screen.</p>
       </div>
-      <button class="btn btn-primary" type="button" data-guide="admin">Open</button>
+      <a class="btn btn-primary" href="guide.html?guide=admin" data-guide="admin">Open</a>
     </div>
     <div class="guide-row">
       <div>
         <h3>IT documentation</h3>
         <p>How the system works, for IT staff who need to change its rules, screens, or setup. It lists the live file IDs, so keep it within the office.</p>
       </div>
-      <button class="btn btn-quiet" type="button" data-guide="it">Open</button>
+      <a class="btn btn-quiet" href="guide.html?guide=it" data-guide="it">Open</a>
     </div>
+    <p class="guide-note">Each guide opens as its own page, with its own <strong>Print or save as PDF</strong> button. To come back, use <strong>Back</strong> at the top of the guide, or your browser's back button.</p>
   </section>
 </div>
 </section>
@@ -1245,14 +1240,6 @@
   </div>
 </div>
 
-<div class="guide-viewer" id="guideViewer" role="dialog" aria-modal="true" aria-labelledby="guideViewerTitle" hidden>
-  <div class="guide-viewer-bar">
-    <h2 id="guideViewerTitle"></h2>
-    <button class="btn btn-quiet guide-new-tab" id="guideNewTab" type="button">Open in a new tab</button>
-    <button class="icon-button" id="guideClose" type="button" aria-label="Close the guide"><svg class="icon"><use href="#i-x"/></svg></button>
-  </div>
-  <iframe class="guide-frame" id="guideFrame" title="Guide" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>
-</div>
 
   <div class="t-toast" id="appToast" role="status"></div>
 
@@ -3794,97 +3781,20 @@
 
   <script>
   /**
-   * The admin manual and the IT documentation. They are fetched from the server only after an
-   * admin signs in, so they never sit on the public page, and are shown exactly as the files look.
+   * The admin manual and the IT documentation. Each opens as a page of its own, guide.html, which
+   * fetches it from the server with the admin's session, so the guides never sit on the public site.
+   * As real pages, they print, work on phones, and the browser's Back button returns here.
    */
   const Guides = (() => {
-    const TITLES = { admin: 'Admin manual', it: 'IT documentation' };
-    /**
-     * Added to each guide. A page shown this way would take "#part" links as links to this app,
-     * so they scroll within the guide instead. Links to other sites open in a new tab.
-     */
-    const LINK_FIX = `<script>
-      document.addEventListener('click', function (event) {
-        var link = event.target.closest('a[href]');
-        if (!link) return;
-        var href = link.getAttribute('href');
-        if (href.charAt(0) !== '#') {
-          link.target = '_blank';
-          return;
-        }
-        event.preventDefault();
-        var target = href.length > 1 ? document.getElementById(decodeURIComponent(href.slice(1))) : null;
-        if (target) target.scrollIntoView({ block: 'start' });
-        else if (href === '#') window.scrollTo(0, 0);
-      }, true);
-    <\/script>`;
-
-    const loaded = new Map();
-    let openName = '';
-    let lastFocus = null;
-
-    async function fetchGuide(name) {
-      if (loaded.has(name)) return loaded.get(name);
-      const response = await Admin.callAdmin('getGuide', name);
-      if (!response.success) throw new Error(response.message);
-      loaded.set(name, response.html);
-      return response.html;
-    }
-
-    function show(name, html) {
-      openName = name;
-      lastFocus = document.activeElement;
-      $('guideViewerTitle').textContent = TITLES[name];
-      $('guideFrame').title = TITLES[name];
-      $('guideFrame').srcdoc = html.replace(/<\/body>/i, `${LINK_FIX}</body>`);
-      $('guideViewer').hidden = false;
-      document.body.classList.add('has-guide-open');
-      $('guideClose').focus();
-    }
-
-    function close() {
-      $('guideViewer').hidden = true;
-      $('guideFrame').removeAttribute('srcdoc');
-      document.body.classList.remove('has-guide-open');
-      openName = '';
-      if (lastFocus && lastFocus.isConnected) lastFocus.focus();
-    }
-
-    /** Opens the guide in its own tab, as a file of its own, for reading side by side or printing. */
-    function openInNewTab() {
-      const html = loaded.get(openName);
-      if (!html) return;
-      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-      const tab = window.open(url, '_blank');
-      if (tab) tab.opener = null;
-      else showToast('Your browser blocked the new tab. Allow pop-ups for this site, then try again.');
-      setTimeout(() => URL.revokeObjectURL(url), 60000);
-    }
-
-    async function handleOpen(button) {
-      const name = button.dataset.guide;
-      setButtonBusy(button, true, 'Opening...');
-      try {
-        show(name, await fetchGuide(name));
-      } catch (err) {
-        if (err.message !== Admin.SESSION_EXPIRED) showToast(err.message && !/fetch/i.test(err.message) ? err.message : 'The guide could not be opened. Please try again.');
-      }
-      setButtonBusy(button, false);
-    }
-
     function init() {
       $('view-guides').addEventListener('click', (event) => {
-        const button = event.target.closest('[data-guide]');
-        if (button) handleOpen(button);
-      });
-      $('guideClose').addEventListener('click', close);
-      $('guideNewTab').addEventListener('click', openInNewTab);
-      document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !$('guideViewer').hidden) close();
+        if (!event.target.closest('a[data-guide]')) return;
+        // Marks this page, so that coming back from the guide shows the Guides screen again.
+        history.replaceState(null, '', '#guides');
       });
     }
 
-    return { init, close };
+    return { init };
   })();
 </script>
 
@@ -4028,10 +3938,14 @@
       Guides.init();
       Session.init(handleSessionChange);
 
+      // Coming back from a guide page opens the Guides screen again.
+      const isBackFromGuide = location.hash === '#guides';
+      if (isBackFromGuide) history.replaceState(null, '', location.pathname + location.search);
+
       const saved = Session.restore();
       if (saved) {
         applySession(saved);
-        showView(saved.isAdmin ? 'records' : 'form');
+        showView(isBackFromGuide ? 'guides' : saved.isAdmin ? 'records' : 'form');
       } else {
         showSignIn();
       }
