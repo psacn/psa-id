@@ -208,7 +208,7 @@
   /* Page */
   .main { flex: 1; min-height: 0; overflow-y: auto; scrollbar-gutter: stable; }
   #appContent { padding: 24px 28px 48px; }
-  #view-form, #view-admin, #recordsPane, #approvalsPane { animation: view-in var(--duration-fast) var(--ease-smooth-out); }
+  #view-signin, #view-form, #view-admin, #view-guides, #recordsPane, #approvalsPane { animation: view-in var(--duration-fast) var(--ease-smooth-out); }
   @keyframes view-in { from { opacity: 0; } to { opacity: 1; } }
   .page-head { margin-bottom: 16px; }
   .page-head h1 { font-size: 26px; font-weight: 800; color: var(--ink); }
@@ -311,12 +311,6 @@
   /* Admin sign-in */
   .signin-card { max-width: 420px; margin: 48px auto; }
   .signin-card h1 { display: flex; align-items: center; gap: 9px; padding: 14px 22px 13px; background-color: var(--surface-tint); background-image: var(--paper-hatch); border-bottom: 2px solid var(--ink); font-size: 20px; font-weight: 800; color: var(--ink); }
-  .signin-card form { padding: 18px 22px 22px; }
-  .signin-card p { margin-bottom: 16px; color: var(--text-muted); }
-  .signin-card .field { margin-bottom: 16px; }
-  .signin-actions { display: flex; gap: 10px; }
-  .signin-actions .btn { flex: 1; }
-  #adminCode { font-family: var(--font-data); font-size: 22px; letter-spacing: 0.3em; text-align: center; }
 
   /* Admin area */
   .admin-area { max-width: 1500px; margin: 0 auto; }
@@ -473,6 +467,123 @@
   /* Toast */
   .t-toast { position: fixed; left: 50%; bottom: 20px; z-index: 3000; max-width: calc(100% - 32px); padding: 12px 16px; background: var(--ink); color: #ffffff; border-radius: var(--radius-surface); box-shadow: var(--shadow-raised); font-size: 14.5px; font-weight: 500; text-wrap: pretty; pointer-events: none; opacity: 0; transform: translate(-50%, 16px) scale(0.97); filter: blur(2px); transition: opacity 250ms var(--ease-smooth-out), transform 250ms var(--ease-smooth-out), filter 250ms var(--ease-smooth-out); }
   .t-toast.is-open { opacity: 1; transform: translate(-50%, 0) scale(1); filter: blur(0); transition-duration: 350ms; }
+
+  /* Sign in with Google */
+  .signin-body { padding: 18px 22px 22px; }
+  .signin-body > p { margin-bottom: 16px; color: var(--text-muted); text-wrap: pretty; }
+  .google-button { display: flex; justify-content: center; min-height: 44px; }
+  .google-button .skeleton { width: 260px; height: 40px; }
+  .sample-signin { display: grid; gap: 8px; }
+  .sample-signin-note { font-size: 13.5px; color: var(--text-muted); }
+  .signin-status { margin-top: 12px; font-weight: 600; color: var(--ink); text-align: center; }
+  .signin-status:empty { display: none; }
+  .signin-note { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--text-muted); text-align: center; }
+  .signin-note a { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; white-space: nowrap; }
+  .notice-info { flex-direction: column; align-items: flex-start; gap: 4px; background: var(--warn-soft); color: var(--warn); }
+
+  /* The app's own pop-up card */
+  .dialog-card { display: flex; flex-direction: column; width: 100%; max-width: 440px; max-height: calc(100dvh - 32px); background: var(--surface); border-radius: var(--radius-surface); box-shadow: var(--shadow-raised); animation: t-modal-open var(--duration-fast) var(--ease-smooth-out); }
+  .dialog-card.is-wide { max-width: 640px; }
+  .dialog-head { padding: 20px 22px 0; }
+  .dialog-head h2 { font-size: 18px; font-weight: 800; line-height: 1.25; color: var(--ink); text-wrap: balance; }
+  .dialog-head p { margin-top: 6px; color: var(--text-muted); text-wrap: pretty; }
+  .dialog-body { min-height: 0; overflow-y: auto; margin-top: 14px; padding: 0 22px; overscroll-behavior: contain; }
+  .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 22px 20px; margin-top: 4px; border-top: 1px solid var(--line); }
+  .btn-danger { background: var(--danger); color: #ffffff; }
+  .btn-danger:hover:not(:disabled) { background: var(--danger-hover); }
+  .dialog-list { display: grid; gap: 2px; max-height: 240px; overflow-y: auto; padding: 8px 12px; background: var(--surface-tint); border: 1px solid var(--line); border-radius: var(--radius-control); list-style: none; }
+  .dialog-list li { padding: 4px 0; overflow-wrap: anywhere; }
+  .dialog-id { margin-right: 6px; font-family: var(--font-data); font-weight: 600; color: var(--control); }
+
+  /* Review before sending */
+  .review { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 18px; padding-bottom: 4px; }
+  .review-photo { width: 96px; height: 96px; display: flex; align-items: center; justify-content: center; background: var(--surface-sunken); border: 1px solid var(--line-strong); border-radius: 3px; overflow: hidden; font-size: 12.5px; font-weight: 600; color: var(--text-muted); text-align: center; }
+  .review-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .review-title { padding-bottom: 6px; border-bottom: 2px solid var(--ink); font-size: 15.5px; font-weight: 800; color: var(--ink); }
+  .review-title + .review-list { margin-bottom: 16px; }
+  .review-list div { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .review-list dt { font-size: 13.5px; font-weight: 700; color: var(--text-muted); }
+  .review-list dd { font-weight: 600; text-transform: uppercase; overflow-wrap: anywhere; }
+  .review-empty { font-weight: 400; text-transform: none; color: var(--text-muted); }
+
+  /* Records: sort, filter, and pages */
+  .list-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; margin: -4px 0 14px; }
+  .control-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 0 1 230px; font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .control-field.control-size { flex: 0 0 120px; }
+  .control-field select { width: 100%; min-height: 40px; padding: 0 34px 0 10px; background: var(--surface) var(--select-chevron) no-repeat right 10px center; border: 1.5px solid var(--line-strong); border-radius: var(--radius-control); appearance: none; font-weight: 400; }
+  .page-head-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .page-numbers { display: flex; align-items: center; gap: 4px; }
+  .page-number { min-width: 40px; height: 40px; padding: 0 8px; background: var(--surface); border: none; border-radius: var(--radius-control); box-shadow: inset 0 0 0 1px var(--line-strong); color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color var(--duration-quick) ease-out; }
+  .page-number:hover { background: var(--accent-soft); }
+  .page-number.is-current { background: var(--ink); color: #ffffff; box-shadow: none; cursor: default; }
+  .page-gap { min-width: 20px; text-align: center; color: var(--text-muted); }
+  .page-next { min-height: 40px; padding: 0 10px 0 14px; }
+  .page-next .icon { margin: 0 -2px 0 0; }
+  .project-more { margin-left: 4px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+  .field-note { font-size: 12.5px; color: var(--text-muted); }
+  #editValidUntil { background: var(--surface-tint); font-family: var(--font-data); color: var(--text); }
+
+  /* Record history in the edit panel */
+  .history-sent { margin-bottom: 12px; font-size: 14px; color: var(--text-muted); overflow-wrap: anywhere; }
+  .history-sent strong { color: var(--text); }
+  .history-title { margin: 4px 0 6px; font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .history-list { margin-bottom: 14px; list-style: none; border-top: 1px solid var(--line); }
+  .history-list li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+  .history-ids li { grid-template-columns: 112px minmax(0, 1fr) auto; align-items: center; }
+  .history-ids li.is-this { background: var(--accent-soft); box-shadow: -8px 0 0 var(--accent-soft), 8px 0 0 var(--accent-soft); }
+  .history-date, .history-meta { font-family: var(--font-data); font-size: 13px; color: var(--text-muted); }
+  .history-meta { font-size: 12.5px; }
+  .history-id { font-family: var(--font-data); font-weight: 600; color: var(--control); }
+  .history-now { margin-left: 6px; padding: 1px 6px; background: var(--ink); color: #ffffff; border-radius: 3px; font-size: 11px; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; }
+
+  /* Approvals: likely duplicates */
+  .group-caption { margin-right: 4px; font-size: 12.5px; font-weight: 600; color: var(--text-muted); }
+  .lookalike { display: grid; gap: 2px; margin-bottom: 10px; padding: 10px 12px; background: var(--warn-soft); color: var(--warn); border-radius: var(--radius-control); font-size: 14px; }
+  .lookalike strong { color: var(--text); }
+  .lookalike-label { font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .lookalike-id { font-family: var(--font-data); font-weight: 600; color: var(--control); }
+  .check-hit input:disabled { cursor: not-allowed; opacity: 0.45; }
+
+  /* Brightness in the crop window */
+  .crop-brightness { display: grid; grid-template-columns: auto minmax(0, 1fr) 48px; align-items: center; gap: 12px; margin-bottom: 14px; padding: 8px 12px; background: var(--surface-tint); border-radius: var(--radius-control); }
+  .crop-brightness label { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--text); }
+  .crop-brightness .icon { width: 18px; height: 18px; color: var(--ink); }
+  .crop-brightness input { width: 100%; height: 32px; accent-color: var(--ink); cursor: pointer; }
+  .crop-brightness output { font-family: var(--font-data); font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
+  #cropModal .cropper-canvas img, #cropModal .cropper-view-box img { filter: brightness(var(--crop-brightness, 1)); }
+
+  /* Guides */
+  .guides-area { max-width: 900px; margin: 0 auto; }
+  .guide-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .guide-row:last-child { border-bottom: none; }
+  .guide-row h3 { font-size: 16px; font-weight: 800; color: var(--ink); }
+  .guide-row p { margin-top: 3px; max-width: 62ch; color: var(--text-muted); text-wrap: pretty; }
+  .guide-viewer { position: fixed; inset: 0; z-index: 2100; display: flex; flex-direction: column; background: var(--surface); }
+  .guide-viewer[hidden] { display: none; }
+  .guide-viewer-bar { display: flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 8px 0 20px; background-color: var(--ink); background-image: var(--bar-lines); color: #ffffff; }
+  .guide-viewer-bar h2 { flex: 1; min-width: 0; font-size: 17px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .guide-viewer-bar .icon-button { color: #ffffff; }
+  .guide-viewer-bar .icon-button:hover { background: var(--ink-raised); }
+  .guide-viewer-bar :focus-visible { outline-color: var(--gold); }
+  .guide-frame { flex: 1; width: 100%; border: none; background: #ffffff; }
+  body.has-guide-open { overflow: hidden; }
+
+  @media (max-width: 760px) {
+    .dialog-head { padding: 18px 16px 0; }
+    .dialog-body { padding: 0 16px; }
+    .dialog-actions { padding: 14px 16px 16px; }
+    .dialog-actions .btn { flex: 1; }
+    .review { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .review-list div { grid-template-columns: 116px minmax(0, 1fr); }
+    .control-field, .control-field.control-size { flex: 1 1 100%; }
+    .control-field select { min-height: 46px; }
+    .page-number, .page-next { min-height: 44px; height: 44px; }
+    .pagination-controls { justify-content: center; }
+    .page-buttons { flex-wrap: wrap; justify-content: center; }
+    .guide-row { flex-direction: column; align-items: stretch; }
+    .guide-new-tab { display: none; }
+    .request-actions.has-choice .btn { padding: 0 8px; }
+  }
 
   /* On smaller laptops, long names wrap, so that the Edit button always stays on screen. */
   @media (max-width: 1500px) {
@@ -650,8 +761,8 @@
   .card-signatory-title { margin-top: 0.5mm; font-size: 1.9mm; }
   .card-office-lines { margin-top: 1.1mm; font-size: 1.5mm; line-height: 1.25; }
 
-  /* A small gap between front and back leaves room for the paper fold. */
-  .id-pair { display: flex; gap: 1.5mm; flex-shrink: 0; }
+  /* Front and back sit 0.5 mm apart: just room for the fold, so the folded card shows no blank edge. */
+  .id-pair { display: flex; gap: 0.5mm; flex-shrink: 0; }
 
   /* Form preview: one card that turns over. GSAP drives the turn. */
   .flip-scene { zoom: 1.35; width: 54mm; height: 85.6mm; margin: 0 auto; perspective: 900px; }
@@ -701,6 +812,7 @@
       });
     }
 
+    window.IdApi = { call: callApi };
     window.google = { script: { run: makeRunner() } };
   })();
 </script>
@@ -737,6 +849,9 @@
   <symbol id="i-image" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></symbol>
   <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></symbol>
   <symbol id="i-zoom-in" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /><line x1="11" x2="11" y1="8" y2="14" /><line x1="8" x2="14" y1="11" y2="11" /></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></symbol>
+  <symbol id="i-book-open" viewBox="0 0 24 24"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol>
+  <symbol id="i-external-link" viewBox="0 0 24 24"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></symbol>
   <symbol id="i-zoom-out" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" x2="16.65" y1="21" y2="16.65" /><line x1="8" x2="14" y1="11" y2="11" /></symbol>
   <symbol id="i-rotate-ccw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></symbol>
   <symbol id="i-rotate-cw" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></symbol>
@@ -749,17 +864,17 @@
       <span class="brand-seal" id="brandSeal"></span>
       <span class="brand-text"><strong>ID Generator</strong><small>PSA Camarines Norte</small></span>
     </a>
-    <nav class="top-nav" id="sidebar" aria-label="Main">
-      <a class="nav-link active" data-view="form" href="#" aria-current="page">ID Form</a>
-      <a class="nav-link" data-view="admin" id="navSignIn" href="#">Admin</a>
+    <nav class="top-nav" id="sidebar" aria-label="Main" hidden>
+      <a class="nav-link active" data-view="form" id="navForm" href="#" aria-current="page">ID Form</a>
       <a class="nav-link" data-view="records" id="navRecords" href="#" hidden>Records</a>
       <a class="nav-link" data-view="approvals" id="navApprovals" href="#" hidden>Approvals <span class="tab-count" id="approvalTabCount" hidden>0</span></a>
-      <div class="admin-identity" id="adminIdentityBox" hidden>
-        <span id="adminIdentity"></span>
+      <a class="nav-link" data-view="guides" id="navGuides" href="#" hidden>Guides</a>
+      <div class="admin-identity" id="identityBox" hidden>
+        <span id="identityEmail"></span>
         <button class="icon-button" id="signOutButton" type="button" title="Sign out" aria-label="Sign out"><svg class="icon"><use href="#i-log-out"/></svg></button>
       </div>
     </nav>
-    <div class="topbar-end">
+    <div class="topbar-end" id="topbarEnd" hidden>
       <button class="icon-button" id="approvalBell" type="button" aria-label="Approvals" hidden>
         <svg class="icon"><use href="#i-bell"/></svg>
         <span class="t-badge" id="approvalBadge" data-open="false"><span class="t-badge-dot" id="approvalBadgeCount">0</span></span>
@@ -771,7 +886,30 @@
 
   <main class="main" id="mainScroll">
     <div id="appContent">
-      <section id="view-form"><div class="form-area">
+      <section id="view-signin"><div class="sheet signin-card">
+  <h1><svg class="icon"><use href="#i-lock"/></svg> Sign in</h1>
+  <div class="signin-body">
+    <p>Sign in with your Google account to fill in the ID form. The email address you use is saved with each form you send.</p>
+
+    <div class="notice notice-info" id="inAppNotice" role="alert" hidden>
+      <span>Google does not allow signing in inside Messenger, Facebook, or other in-app browsers. Open this page in Chrome or Safari instead.</span>
+      <button class="link-button" id="copyLinkButton" type="button">Copy the link</button>
+    </div>
+
+    <div class="google-button" id="googleButton" aria-live="polite"><span class="skeleton"></span></div>
+
+    <div class="sample-signin" id="sampleSignIn" hidden>
+      <p class="sample-signin-note">Preview only: choose who to sign in as.</p>
+      <button class="btn btn-quiet btn-block" type="button" data-sample="admin">Sample admin</button>
+      <button class="btn btn-quiet btn-block" type="button" data-sample="employee">Sample employee</button>
+    </div>
+
+    <p class="signin-status" id="signInStatus" role="status"></p>
+    <p class="signin-note">You stay signed in on this device until midnight. <a href="privacy.html">Privacy notice</a></p>
+  </div>
+</div>
+</section>
+      <section id="view-form" hidden><div class="form-area">
   <div class="page-head" id="formHead">
     <h1>ID Form</h1>
     <p id="formIntro">Fill in your details below. Your ID card preview fills in as you go.</p>
@@ -860,38 +998,13 @@
   </div>
 </div>
 </section>
-      <section id="view-admin" hidden><div id="adminSignIn" class="sheet signin-card">
-  <h1><svg class="icon"><use href="#i-lock"/></svg> Admin sign-in</h1>
-
-  <form id="signInEmailStep" novalidate>
-    <p>Enter your admin email address, and we'll send you a <span class="nowrap">6-digit</span> code.</p>
-    <div class="field">
-      <label for="adminEmail">Email address</label>
-      <input type="email" id="adminEmail" autocomplete="email">
-    </div>
-    <button class="btn btn-primary btn-block" id="sendCodeButton" type="submit">Send code</button>
-  </form>
-
-  <form id="signInCodeStep" novalidate hidden>
-    <p id="signInCodeNote"></p>
-    <div class="field">
-      <label for="adminCode">6-digit code</label>
-      <input type="text" id="adminCode" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
-    </div>
-    <div class="signin-actions">
-      <button class="btn btn-quiet" id="changeEmailButton" type="button">Back</button>
-      <button class="btn btn-primary" id="verifyCodeButton" type="submit">Sign in</button>
-    </div>
-  </form>
-</div>
-
-<div id="adminArea" class="admin-area" hidden>
+      <section id="view-admin" hidden><div id="adminArea" class="admin-area">
   <div id="recordsPane">
     <div class="page-head"><h1>Records</h1></div>
     <div class="toolbar">
       <div class="search-box">
         <svg class="icon"><use href="#i-search"/></svg>
-        <input type="search" id="searchBox" placeholder="Search name, ID, position, project" aria-label="Search records">
+        <input type="search" id="searchBox" placeholder="Search all records: name, ID, position, project" aria-label="Search all records">
       </div>
       <div class="toolbar-actions">
         <span class="selection-count" id="selectionInfo"></span>
@@ -900,6 +1013,37 @@
         <button class="btn btn-danger-quiet" id="deleteButton" type="button" disabled><svg class="icon"><use href="#i-trash-2"/></svg> Delete</button>
         <button class="icon-button" id="refreshButton" type="button" title="Refresh" aria-label="Refresh records"><svg class="icon"><use href="#i-refresh-cw"/></svg></button>
       </div>
+    </div>
+
+    <div class="list-controls" role="group" aria-label="Sort and filter records">
+      <label class="control-field">
+        <span>Sort</span>
+        <select id="sortSelect">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name-asc">Last name, A to Z</option>
+          <option value="name-desc">Last name, Z to A</option>
+          <option value="project-asc">Project, A to Z</option>
+          <option value="project-desc">Project, Z to A</option>
+          <option value="issued-desc">Date issued, newest first</option>
+          <option value="issued-asc">Date issued, oldest first</option>
+          <option value="number-asc">ID number, lowest first</option>
+          <option value="number-desc">ID number, highest first</option>
+        </select>
+      </label>
+      <label class="control-field">
+        <span>Project</span>
+        <select id="projectFilter"><option value="">All projects</option></select>
+      </label>
+      <label class="control-field control-size">
+        <span>Rows per page</span>
+        <select id="pageSizeSelect">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </label>
     </div>
 
     <div class="records-layout">
@@ -923,15 +1067,14 @@
       </table>
     </div>
 
-    <div class="pagination-controls">
-      <span id="pageInfo"></span>
+    <nav class="pagination-controls" aria-label="Pages of records">
+      <span id="pageInfo" role="status"></span>
       <div class="page-buttons">
-        <button class="icon-button" data-page="first" type="button" aria-label="First page"><svg class="icon"><use href="#i-chevrons-left"/></svg></button>
         <button class="icon-button" data-page="prev" type="button" aria-label="Previous page"><svg class="icon"><use href="#i-chevron-left"/></svg></button>
-        <button class="icon-button" data-page="next" type="button" aria-label="Next page"><svg class="icon"><use href="#i-chevron-right"/></svg></button>
-        <button class="icon-button" data-page="last" type="button" aria-label="Last page"><svg class="icon"><use href="#i-chevrons-right"/></svg></button>
+        <div class="page-numbers" id="pageNumbers"></div>
+        <button class="btn btn-quiet page-next" data-page="next" type="button"><span id="nextPageLabel">Next</span> <svg class="icon"><use href="#i-chevron-right"/></svg></button>
       </div>
-    </div>
+    </nav>
 
       </div>
 
@@ -956,11 +1099,14 @@
   </div>
 
   <div id="approvalsPane" hidden>
-    <div class="page-head"><h1>Approvals</h1></div>
+    <div class="page-head page-head-row">
+      <h1>Approvals</h1>
+      <button class="icon-button" id="approvalRefresh" type="button" title="Refresh" aria-label="Refresh requests"><svg class="icon"><use href="#i-refresh-cw"/></svg></button>
+    </div>
     <div class="approvals-toolbar">
       <div class="search-box">
         <svg class="icon"><use href="#i-search"/></svg>
-        <input type="search" id="approvalSearch" placeholder="Search name or project" aria-label="Search requests">
+        <input type="search" id="approvalSearch" placeholder="Search all requests: name, project, ID" aria-label="Search all requests">
       </div>
       <div class="t-tabs" id="approvalFilters" role="tablist" aria-label="Request type">
         <span class="t-tabs-pill"></span>
@@ -968,6 +1114,7 @@
         <button class="t-tab" type="button" role="tab" aria-selected="false" data-tab="renewal">Renewals</button>
         <button class="t-tab" type="button" role="tab" aria-selected="false" data-tab="position">Position changes</button>
         <button class="t-tab" type="button" role="tab" aria-selected="false" data-tab="lost">Lost IDs</button>
+        <button class="t-tab" type="button" role="tab" aria-selected="false" data-tab="correction">Corrections</button>
       </div>
       <div class="bulk-actions" id="bulkActions" hidden>
         <span class="selection-count" id="bulkCount"></span>
@@ -992,11 +1139,12 @@
       <div class="field span-3"><label for="editStatus">ID status</label>
         <select id="editStatus">
           <option value="VALID">VALID</option>
-          <option value="EXPIRED">EXPIRED</option>
           <option value="REVOKED">REVOKED</option>
           <option value="LOST">LOST</option>
         </select>
       </div>
+      <div class="field span-3"><label class="required" for="editDateIssued">Date issued</label><input type="date" id="editDateIssued"></div>
+      <div class="field span-3"><label for="editValidUntil">Valid until</label><input type="text" id="editValidUntil" readonly aria-describedby="editValidUntilNote"><p class="field-note" id="editValidUntilNote">Set by the year in the ID number.</p></div>
       <div class="field span-4 is-short-partner"><label class="required" for="editFirst">First name</label><input class="uppercase" type="text" id="editFirst" maxlength="60"></div>
       <div class="field span-2 is-short"><label for="editMi">M.I.</label><input class="uppercase" type="text" id="editMi" maxlength="1"></div>
       <div class="field"><label class="required" for="editLast">Last name</label><input class="uppercase" type="text" id="editLast" maxlength="60"></div>
@@ -1021,6 +1169,9 @@
       <div class="field span-3"><label class="required" for="editEmgRel">Relationship</label><input class="uppercase" type="text" id="editEmgRel" maxlength="60"></div>
       <div class="field span-3"><label class="required" for="editEmgNum">Contact number</label><input type="tel" id="editEmgNum" maxlength="20"></div>
       <div class="field"><label class="required" for="editEmgAddress">Contact's address</label><textarea class="uppercase grow-box" id="editEmgAddress" rows="1" maxlength="130"></textarea></div>
+
+      <div class="panel-section">History</div>
+      <div class="field history" id="editHistory"></div>
     </div>
   </div>
   <div class="panel-actions">
@@ -1029,13 +1180,37 @@
   </div>
 </form>
 </section>
+      <section id="view-guides" hidden><div class="guides-area">
+  <div class="page-head">
+    <h1>Guides</h1>
+    <p>For admins only. These open after you sign in and never appear on the public page.</p>
+  </div>
+  <section class="sheet">
+    <h2 class="sheet-title">Manuals</h2>
+    <div class="guide-row">
+      <div>
+        <h3>Admin manual</h3>
+        <p>Signing in, approving requests, correcting records and photos, and printing IDs, with pictures of every screen.</p>
+      </div>
+      <button class="btn btn-primary" type="button" data-guide="admin">Open</button>
+    </div>
+    <div class="guide-row">
+      <div>
+        <h3>IT documentation</h3>
+        <p>How the system works, for IT staff who need to change its rules, screens, or setup. It lists the live file IDs, so keep it within the office.</p>
+      </div>
+      <button class="btn btn-quiet" type="button" data-guide="it">Open</button>
+    </div>
+  </section>
+</div>
+</section>
     </div>
   </main>
 
   <div id="cropModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="cropTitle">
   <div class="crop-modal-content">
     <h2 id="cropTitle">Adjust the 1x1 picture</h2>
-    <p class="crop-hint">Drag the picture to move it inside the square. Drag the square's corners to resize it.</p>
+    <p class="crop-hint">Drag the picture to move it inside the square. Drag the square's corners to resize it. Use Brightness if the face is too dark or too light.</p>
     <div class="crop-img-container"><img id="imageToCrop" alt="Picture to crop"></div>
     <div class="crop-tools" role="group" aria-label="Picture tools">
       <button class="icon-button" id="cropZoomOut" type="button" title="Zoom out" aria-label="Zoom out"><svg class="icon"><use href="#i-zoom-out"/></svg></button>
@@ -1044,11 +1219,39 @@
       <button class="icon-button" id="cropRotateRight" type="button" title="Rotate right" aria-label="Rotate right"><svg class="icon"><use href="#i-rotate-cw"/></svg></button>
       <button class="link-button" id="cropReset" type="button">Reset</button>
     </div>
+    <div class="crop-brightness">
+      <label for="cropBrightness"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg> Brightness</label>
+      <input type="range" id="cropBrightness" min="50" max="150" step="5" value="100" aria-describedby="cropBrightnessValue">
+      <output id="cropBrightnessValue" for="cropBrightness">100%</output>
+    </div>
     <div class="crop-actions">
       <button class="btn btn-quiet" id="cropCancelButton" type="button">Cancel</button>
       <button class="btn btn-primary" id="cropSaveButton" type="button">Use this crop</button>
     </div>
   </div>
+</div>
+
+  <div class="modal-overlay" id="appDialog" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
+  <div class="dialog-card" id="appDialogCard">
+    <div class="dialog-head">
+      <h2 id="appDialogTitle"></h2>
+      <p id="appDialogMessage"></p>
+    </div>
+    <div class="dialog-body" id="appDialogBody"></div>
+    <div class="dialog-actions">
+      <button class="btn btn-quiet" id="appDialogCancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="appDialogConfirm" type="button">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="guide-viewer" id="guideViewer" role="dialog" aria-modal="true" aria-labelledby="guideViewerTitle" hidden>
+  <div class="guide-viewer-bar">
+    <h2 id="guideViewerTitle"></h2>
+    <button class="btn btn-quiet guide-new-tab" id="guideNewTab" type="button">Open in a new tab</button>
+    <button class="icon-button" id="guideClose" type="button" aria-label="Close the guide"><svg class="icon"><use href="#i-x"/></svg></button>
+  </div>
+  <iframe class="guide-frame" id="guideFrame" title="Guide" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"></iframe>
 </div>
 
   <div class="t-toast" id="appToast" role="status"></div>
@@ -1109,8 +1312,12 @@
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  /** Calls a server function and returns a promise. */
+  /**
+   * Calls a server function and returns a promise. The public page sends it with fetch (see
+   * tools/build-site.js). Google's sign-in script also uses window.google, so calls never depend on it there.
+   */
   function callServer(functionName, ...args) {
+    if (window.IdApi) return window.IdApi.call(functionName, args);
     return new Promise((resolve, reject) => {
       google.script.run
         .withSuccessHandler(resolve)
@@ -1274,6 +1481,85 @@
     void element.offsetWidth;
     element.classList.add('count-pop');
   }
+</script>
+
+  <script>
+  /**
+   * The app's own pop-up card, used instead of the browser's confirm(), which shows the site's
+   * address and cannot be styled. Only one is open at a time. It keeps keyboard focus inside,
+   * Escape cancels, and focus goes back to where it was.
+   */
+  const AppDialog = (() => {
+    let resolveOpen = null;
+    let lastFocus = null;
+
+    function close(answer) {
+      $('appDialog').classList.remove('open');
+      $('appDialogCard').classList.remove('is-wide');
+      $('appDialogBody').innerHTML = '';
+      const resolve = resolveOpen;
+      resolveOpen = null;
+      if (lastFocus && lastFocus.isConnected) lastFocus.focus();
+      if (resolve) resolve(answer);
+    }
+
+    /**
+     * Opens the card and resolves true when the main button is chosen, false otherwise.
+     * `bodyHtml` must already be made safe with escapeHtml.
+     */
+    function open({ title, message, bodyHtml, confirmLabel, cancelLabel, tone, isWide }) {
+      if (resolveOpen) close(false);
+      lastFocus = document.activeElement;
+      $('appDialogTitle').textContent = title;
+      $('appDialogMessage').textContent = message || '';
+      $('appDialogMessage').hidden = !message;
+      $('appDialogBody').innerHTML = bodyHtml || '';
+      $('appDialogBody').hidden = !bodyHtml;
+      $('appDialogConfirm').textContent = confirmLabel || 'OK';
+      $('appDialogConfirm').className = `btn ${tone === 'danger' ? 'btn-danger' : 'btn-primary'}`;
+      $('appDialogCancel').textContent = cancelLabel || 'Cancel';
+      $('appDialogCard').classList.toggle('is-wide', Boolean(isWide));
+      $('appDialog').classList.add('open');
+      $('appDialogBody').scrollTop = 0;
+      (tone === 'danger' ? $('appDialogCancel') : $('appDialogConfirm')).focus();
+      return new Promise((resolve) => {
+        resolveOpen = resolve;
+      });
+    }
+
+    function keepFocusInside(event) {
+      if (event.key !== 'Tab') return;
+      const focusable = [...$('appDialogCard').querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+        .filter((element) => !element.disabled && element.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    function init() {
+      $('appDialogConfirm').addEventListener('click', () => close(true));
+      $('appDialogCancel').addEventListener('click', () => close(false));
+      $('appDialog').addEventListener('click', (event) => {
+        if (event.target === $('appDialog')) close(false);
+      });
+      $('appDialog').addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          event.stopPropagation();
+          close(false);
+        }
+        keepFocusInside(event);
+      });
+    }
+
+    return { open, init, isOpen: () => Boolean(resolveOpen) };
+  })();
 </script>
 
   <script>
@@ -1535,7 +1821,7 @@
 
   <script>
   /**
-   * The crop window shared by the ID form and the Admin screens.
+   * The crop window shared by the ID form and the Admin screens: move, zoom, rotate, crop, and brightness.
    * Output is a 600 x 600 JPEG, small enough that photos use very little Drive storage.
    */
   const PhotoCropper = (() => {
@@ -1549,6 +1835,31 @@
 
     let cropper = null;
     let resolveCrop = null;
+    let brightness = 100;
+
+    /** Shows the brightness on the picture being cropped. The saved photo gets the same change in confirmCrop. */
+    function setBrightness(value) {
+      brightness = Math.min(Math.max(Number(value) || 100, 50), 150);
+      $('cropBrightness').value = String(brightness);
+      $('cropBrightnessValue').textContent = `${brightness}%`;
+      $('cropModal').style.setProperty('--crop-brightness', String(brightness / 100));
+    }
+
+    /** Makes the photo brighter or darker. Done pixel by pixel, because some phone browsers cannot filter a canvas. */
+    function applyBrightness(canvas) {
+      if (brightness === 100) return canvas;
+      const context = canvas.getContext('2d');
+      const image = context.getImageData(0, 0, canvas.width, canvas.height);
+      const factor = brightness / 100;
+      const pixels = image.data;
+      for (let index = 0; index < pixels.length; index += 4) {
+        pixels[index] = Math.min(pixels[index] * factor, 255);
+        pixels[index + 1] = Math.min(pixels[index + 1] * factor, 255);
+        pixels[index + 2] = Math.min(pixels[index + 2] * factor, 255);
+      }
+      context.putImageData(image, 0, 0);
+      return canvas;
+    }
 
     function finish(result) {
       $('cropModal').classList.remove('open');
@@ -1573,6 +1884,7 @@
         const image = $('imageToCrop');
         image.onerror = showUnreadable;
         image.onload = () => {
+          setBrightness(100);
           $('cropModal').classList.add('open');
           cropper = new Cropper(image, {
             aspectRatio: 1,
@@ -1624,12 +1936,12 @@
 
     function confirmCrop() {
       if (!cropper) return;
-      const canvas = cropper.getCroppedCanvas({
+      const canvas = applyBrightness(cropper.getCroppedCanvas({
         width: OUTPUT_SIZE_PX,
         height: OUTPUT_SIZE_PX,
         fillColor: '#fff',
         imageSmoothingQuality: 'high'
-      });
+      }));
       finish(canvas.toDataURL('image/jpeg', JPEG_QUALITY));
     }
 
@@ -1646,10 +1958,183 @@
       $('cropZoomIn').addEventListener('click', useCropper((active) => active.zoom(ZOOM_STEP)));
       $('cropRotateLeft').addEventListener('click', useCropper((active) => active.rotate(-ROTATE_STEP_DEGREES)));
       $('cropRotateRight').addEventListener('click', useCropper((active) => active.rotate(ROTATE_STEP_DEGREES)));
-      $('cropReset').addEventListener('click', useCropper((active) => active.reset()));
+      $('cropReset').addEventListener('click', useCropper((active) => {
+        active.reset();
+        setBrightness(100);
+      }));
+      $('cropBrightness').addEventListener('input', (event) => setBrightness(event.target.value));
     }
 
     return { open, openImage, init };
+  })();
+</script>
+
+  <script>
+  /**
+   * Sign in with Google, and the session that lasts until midnight. The page keeps the session
+   * on this device, so people do not sign in again each time they open the app. The server
+   * checks it on every call, and says whether the person is an admin.
+   */
+  const Session = (() => {
+    const STORAGE_KEY = 'idGeneratorSession';
+    const GIS_URL = 'https://accounts.google.com/gsi/client';
+    const BUTTON_MAX_WIDTH = 320;
+    const IN_APP_BROWSER = /FBAN|FBAV|FB_IAB|FBIOS|Messenger|Instagram|Line\/|MicroMessenger|; wv\)/i;
+
+    let current = null;
+    let listener = () => {};
+    let isGoogleReady = false;
+
+    function readSaved() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        return saved && saved.token && saved.expiresAt > Date.now() ? saved : null;
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function save(session) {
+      current = session;
+      try {
+        if (session) localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+        else localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {
+        // Storage can be blocked. The session then lasts until the page is closed.
+      }
+    }
+
+    function setStatus(message) {
+      $('signInStatus').textContent = message || '';
+    }
+
+    /** Shows a saved session at once, then has the server confirm it and say whether the person is still an admin. */
+    function restore() {
+      const saved = readSaved();
+      if (!saved) return null;
+      current = saved;
+      callServer('checkSession', saved.token)
+        .then((response) => {
+          if (response.success) {
+            const changed = response.isAdmin !== current.isAdmin;
+            save(Object.assign({}, current, { isAdmin: response.isAdmin, expiresAt: response.expiresAt }));
+            if (changed) listener(current);
+          } else if (response.authRequired) {
+            expire();
+          }
+        })
+        .catch(() => {
+          // Offline for a moment. The next server call checks the session again.
+        });
+      return saved;
+    }
+
+    async function finishSignIn(credential) {
+      setStatus('Signing in...');
+      try {
+        const response = await callServer('signInWithGoogle', credential);
+        if (!response.success) {
+          setStatus(response.message);
+          return;
+        }
+        setStatus('');
+        save({ token: response.token, email: response.email, name: response.name, isAdmin: response.isAdmin, expiresAt: response.expiresAt });
+        listener(current);
+      } catch (err) {
+        setStatus('Signing in did not finish. Check your connection, then try again.');
+      }
+    }
+
+    function renderGoogleButton(clientId) {
+      const container = $('googleButton');
+      google.accounts.id.initialize({
+        client_id: clientId,
+        callback: (answer) => finishSignIn(answer.credential),
+        ux_mode: 'popup',
+        auto_select: false,
+        itp_support: true
+      });
+      container.innerHTML = '';
+      google.accounts.id.renderButton(container, {
+        type: 'standard',
+        theme: 'outline',
+        size: 'large',
+        text: 'signin_with',
+        shape: 'rectangular',
+        logo_alignment: 'left',
+        locale: 'en',
+        width: Math.min(BUTTON_MAX_WIDTH, container.clientWidth || BUTTON_MAX_WIDTH)
+      });
+      isGoogleReady = true;
+    }
+
+    /** Fills in the sign-in card. `config` is the page settings, which carry Google's client ID. */
+    async function prepare(config) {
+      $('inAppNotice').hidden = !IN_APP_BROWSER.test(navigator.userAgent);
+      if (window.__previewSignIn) {
+        $('googleButton').hidden = true;
+        $('sampleSignIn').hidden = false;
+        return;
+      }
+      if (!config) return;
+      if (!config.googleClientId) {
+        $('googleButton').innerHTML = '';
+        setStatus('Sign-in is not set up yet. Please tell the system owner.');
+        return;
+      }
+      if (isGoogleReady) return;
+      try {
+        await loadScriptOnce(GIS_URL);
+        renderGoogleButton(config.googleClientId);
+      } catch (err) {
+        $('googleButton').innerHTML = '';
+        setStatus('The Google sign-in button could not load. Check your connection, then reload the page.');
+      }
+    }
+
+    function signOut() {
+      save(null);
+      try {
+        if (window.google && google.accounts) google.accounts.id.disableAutoSelect();
+      } catch (err) {
+        // Nothing to undo when Google's script is not loaded.
+      }
+      listener(null);
+    }
+
+    function expire(message) {
+      if (!current) return;
+      save(null);
+      listener(null, message || 'Your session ended. Please sign in again.');
+    }
+
+    async function copyLink() {
+      try {
+        await navigator.clipboard.writeText(location.href.split('#')[0]);
+        showToast('Link copied. Paste it into Chrome or Safari.');
+      } catch (err) {
+        showToast(`Open this address in Chrome or Safari: ${location.href.split('#')[0]}`);
+      }
+    }
+
+    function init(onChange) {
+      listener = onChange;
+      $('copyLinkButton').addEventListener('click', copyLink);
+      $('sampleSignIn').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-sample]');
+        if (button) finishSignIn(`preview-${button.dataset.sample}`);
+      });
+    }
+
+    return {
+      init,
+      restore,
+      prepare,
+      signOut,
+      expire,
+      get: () => current,
+      token: () => (current ? current.token : '')
+    };
   })();
 </script>
 
@@ -1661,8 +2146,18 @@
     const SHAKE_MS = 300;
     const RESULT_TITLES = {
       NEW: 'Your ID number is ready',
+      'NEW YEAR': 'Your ID number is ready',
       ACTIVE: 'Your ID is already active'
     };
+    const REVIEW_GROUPS = [
+      ['Personnel information', [
+        ['First name', 'firstName'], ['M.I.', 'mi'], ['Last name', 'lastName'], ['Position', 'position'],
+        ['Project/Survey', 'project'], ['Date of birth', 'dob'], ['Complete address', 'address']
+      ]],
+      ['Emergency contact', [
+        ['Contact person', 'emgName'], ['Relationship', 'emgRel'], ['Contact number', 'emgNum'], ["Contact's address", 'emgAddress']
+      ]]
+    ];
 
     /** Google can refuse a call while many people are using the app, so sending tries again by itself. */
     const SEND_ATTEMPTS = 8;
@@ -1918,16 +2413,45 @@
       showNotice(message);
     }
 
+    /** Shows every answer as it will be saved, so that a typo is caught before an ID is made from it. */
+    function renderReview(form) {
+      const shown = Object.assign({}, form, {
+        dob: isoToDisplayDate(form.dob),
+        mi: form.mi.trim() ? `${form.mi.trim()}.` : ''
+      });
+      const photo = photoDataUrl
+        ? `<img src="${escapeHtml(photoDataUrl)}" alt="Your 1x1 picture">`
+        : `<span>No picture</span>`;
+      const groups = REVIEW_GROUPS.map(([title, fields]) => `
+        <h3 class="review-title">${escapeHtml(title)}</h3>
+        <dl class="review-list">
+          ${fields.map(([label, key]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(String(shown[key] || '').replace(/\s+/g, ' ').trim()) || '<span class="review-empty">None</span>'}</dd></div>`).join('')}
+        </dl>`).join('');
+      return `<div class="review"><div class="review-photo">${photo}</div><div class="review-details">${groups}</div></div>`;
+    }
+
+    function confirmDetails() {
+      return AppDialog.open({
+        title: 'Check your details before sending',
+        message: 'Your ID card is printed exactly as shown. If anything is wrong, choose Edit details and fix it first.',
+        bodyHtml: renderReview(readForm()),
+        confirmLabel: 'Send',
+        cancelLabel: 'Edit details',
+        isWide: true
+      });
+    }
+
     async function handleSubmit(event) {
       event.preventDefault();
       showNotice('');
       if (!validateForm()) return;
+      if (!(await confirmDetails())) return;
 
       const button = $('submitButton');
       setButtonBusy(button, true, 'Submitting...');
       submissionId = submissionId || createSubmissionId();
       try {
-        const payload = Object.assign(readForm(), { consent: $('privacyConsent').checked, photoDataUrl, submissionId });
+        const payload = Object.assign(readForm(), { consent: $('privacyConsent').checked, photoDataUrl, submissionId, sessionToken: Session.token() });
         let response = await sendSubmission(payload, button);
         setButtonBusy(button, false);
         if (response.isWaiting) {
@@ -1936,6 +2460,9 @@
         }
         if (!response) {
           showStillWaiting();
+        } else if (response.authRequired) {
+          forgetSubmission();
+          Session.expire('Your sign-in ended. Sign in again, then send the form. Your answers are still filled in.');
         } else if (response.success) {
           showResult(response);
         } else {
@@ -1981,27 +2508,51 @@
       sideTabs = createTabs($('cardSideTabs'), (side) => Motion.turnCard($('cardFlip'), side === 'back'));
     }
 
-    return { init, applyConfig, showLoadError, refreshLayout: () => { if (sideTabs) sideTabs.positionPill(); fitTextBoxes(); } };
+    /** Empties the form after someone signs out, so that the next person on a shared phone starts fresh. */
+    function clear() {
+      resetForm();
+      setFormVisible(true);
+    }
+
+    return { init, applyConfig, showLoadError, clear, refreshLayout: () => { if (sideTabs) sideTabs.positionPill(); fitTextBoxes(); } };
   })();
 </script>
 
   <script>
-  /** Admin sign-in, the records list, editing, and PDF export. */
+  /** Records: the list, sorting and filters, editing, deleting, and PDF export. Signing in is in SignInScript. */
   const Admin = (() => {
-    const ROWS_PER_PAGE = 10;
+    const PAGE_SIZES = [10, 20, 50, 100];
+    const DEFAULT_SORT = 'newest';
     const CARDS_PER_PDF_PAGE = 3;
     const PDF_RENDER_SCALE = 4;
     const PHOTO_BATCH_SIZE = 12;
     const SKELETON_ROWS = 6;
     const TABLE_COLUMNS = 9;
     const SESSION_EXPIRED = 'Session expired';
-    const SESSION_STORAGE_KEY = 'idGeneratorAdminToken';
+    const VIEW_PREFS_KEY = 'idGeneratorRecordsView';
     const HTML2PDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
     const HTML2PDF_INTEGRITY = 'sha384-Yv5O+t3uE3hunW8uyrbpPW3iw6/5/Y7HitWJBLgqfMoA36NogMmy+8wWZMpn3HWc';
 
+    const byText = (a, b) => String(a || '').localeCompare(String(b || ''));
+    const byName = (a, b) => byText(a.lastName, b.lastName) || byText(a.firstName, b.firstName) || byText(a.idNumber, b.idNumber);
+    const byIssued = (a, b) => byText(displayToIsoDate(a.dateIssued), displayToIsoDate(b.dateIssued)) || byText(a.idNumber, b.idNumber);
+    const SORTS = {
+      newest: (a, b) => byText(b.timestamp, a.timestamp),
+      oldest: (a, b) => byText(a.timestamp, b.timestamp),
+      'name-asc': byName,
+      'name-desc': (a, b) => byName(b, a),
+      'project-asc': (a, b) => byText(a.project, b.project) || byName(a, b),
+      'project-desc': (a, b) => byText(b.project, a.project) || byName(a, b),
+      'issued-desc': (a, b) => byIssued(b, a),
+      'issued-asc': byIssued,
+      'number-asc': (a, b) => byText(a.idNumber, b.idNumber),
+      'number-desc': (a, b) => byText(b.idNumber, a.idNumber)
+    };
+
     const state = {
-      token: null,
       isLoaded: false,
+      isLoading: false,
+      isStale: false,
       records: [],
       filtered: [],
       selected: new Set(),
@@ -2009,32 +2560,26 @@
       cardPhotos: new Map(),
       notSquare: new Set(),
       currentPage: 1,
+      pageSize: PAGE_SIZES[0],
+      sort: DEFAULT_SORT,
+      project: '',
       editPhotoDataUrl: null,
       lastFocus: null
     };
 
     /* ---------- Session ---------- */
 
-    function readSavedToken() {
-      try {
-        return sessionStorage.getItem(SESSION_STORAGE_KEY);
-      } catch (err) {
-        return null;
+    /** Calls an admin function with the session, and sends the person back to sign-in if it ended. */
+    async function callAdmin(functionName, ...args) {
+      const response = await callServer(functionName, Session.token(), ...args);
+      if (response.authRequired) {
+        Session.expire();
+        throw new Error(SESSION_EXPIRED);
       }
-    }
-
-    function saveToken(token) {
-      state.token = token;
-      try {
-        if (token) sessionStorage.setItem(SESSION_STORAGE_KEY, token);
-        else sessionStorage.removeItem(SESSION_STORAGE_KEY);
-      } catch (err) {
-        // Storage can be blocked. The session then lasts until the page is reloaded.
-      }
+      return response;
     }
 
     function clearSessionData() {
-      saveToken(null);
       state.isLoaded = false;
       state.records = [];
       state.filtered = [];
@@ -2047,113 +2592,24 @@
       $('selectionPreview').hidden = true;
       $('printEmpty').hidden = false;
       $('printPanel').classList.add('is-empty');
+      closeEditPanel();
+    }
+
+    /** Runs when an admin signs in or opens a saved session. */
+    function start() {
+      Approvals.start();
+    }
+
+    /** Runs when nobody, or a non-admin, is signed in. */
+    function stop() {
+      if (state.isLoaded || state.records.length) clearSessionData();
       Approvals.stop();
     }
 
-    function showSignIn() {
-      AppShell.setSignedIn(false);
-      if (!$('view-admin').hidden) AppShell.setActiveNav('admin');
-      $('adminSignIn').hidden = false;
-      $('adminArea').hidden = true;
-      $('signInEmailStep').hidden = false;
-      $('signInCodeStep').hidden = true;
-      $('adminCode').value = '';
-    }
-
-    function showAdminArea(email, view) {
-      AppShell.setSignedIn(true, email);
-      $('adminSignIn').hidden = true;
-      $('adminArea').hidden = false;
-      Approvals.start();
+    /** Runs each time Records or Approvals opens. */
+    function open(view) {
       showTab(view === 'approvals' ? 'approvals' : 'records');
-    }
-
-    function handleSessionExpired() {
-      clearSessionData();
-      showSignIn();
-      showToast('Your session ended. Please sign in again.');
-    }
-
-    /** Calls an admin function, adding the session token and handling an expired session. */
-    async function callAdmin(functionName, ...args) {
-      const response = await callServer(functionName, state.token, ...args);
-      if (response.authRequired) {
-        handleSessionExpired();
-        throw new Error(SESSION_EXPIRED);
-      }
-      return response;
-    }
-
-    async function handleRequestCode(event) {
-      event.preventDefault();
-      const button = $('sendCodeButton');
-      setButtonBusy(button, true, 'Sending...');
-      try {
-        const response = await callServer('requestAdminCode', $('adminEmail').value);
-        if (response.success) {
-          $('signInCodeNote').textContent = response.message;
-          $('signInEmailStep').hidden = true;
-          $('signInCodeStep').hidden = false;
-          $('adminCode').focus();
-        } else {
-          showToast(response.message);
-        }
-      } catch (err) {
-        showToast('The code could not be sent. Please try again.');
-      }
-      setButtonBusy(button, false);
-    }
-
-    async function handleVerifyCode(event) {
-      event.preventDefault();
-      const button = $('verifyCodeButton');
-      setButtonBusy(button, true, 'Checking...');
-      try {
-        const response = await callServer('verifyAdminCode', $('adminEmail').value, $('adminCode').value);
-        if (response.success) {
-          saveToken(response.token);
-          showAdminArea(response.email);
-          fetchRecords();
-        } else {
-          showToast(response.message);
-        }
-      } catch (err) {
-        showToast('The code could not be checked. Please try again.');
-      }
-      setButtonBusy(button, false);
-    }
-
-    function handleSignOut() {
-      const token = state.token;
-      clearSessionData();
-      showSignIn();
-      callServer('signOutAdmin', token).catch(() => {});
-    }
-
-    /** Runs each time an admin screen opens: admin (sign-in), records, or approvals. */
-    async function open(view) {
-      if (state.isLoaded) {
-        showTab(view === 'approvals' ? 'approvals' : 'records');
-        return;
-      }
-      const savedToken = readSavedToken();
-      if (!savedToken) {
-        showSignIn();
-        return;
-      }
-      state.token = savedToken;
-      try {
-        const response = await callServer('checkAdminSession', savedToken);
-        if (response.success) {
-          showAdminArea(response.email, view);
-          fetchRecords();
-        } else {
-          saveToken(null);
-          showSignIn();
-        }
-      } catch (err) {
-        showSignIn();
-      }
+      if (view !== 'approvals' && (!state.isLoaded || state.isStale)) fetchRecords();
     }
 
     function showTab(name) {
@@ -2163,6 +2619,32 @@
       $('mainScroll').scrollTop = 0;
       if (name === 'approvals') Approvals.show();
       else Approvals.hide();
+    }
+
+    /** Approvals change records. The list reloads the next time Records opens, or now if it is open. */
+    function markStale() {
+      state.isStale = true;
+      if (!$('view-admin').hidden && !$('recordsPane').hidden) fetchRecords();
+    }
+
+    /* ---------- View preferences, kept on this device ---------- */
+
+    function readViewPrefs() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(VIEW_PREFS_KEY) || '{}');
+        if (PAGE_SIZES.includes(saved.pageSize)) state.pageSize = saved.pageSize;
+        if (SORTS[saved.sort]) state.sort = saved.sort;
+      } catch (err) {
+        // The defaults stay.
+      }
+    }
+
+    function saveViewPrefs() {
+      try {
+        localStorage.setItem(VIEW_PREFS_KEY, JSON.stringify({ pageSize: state.pageSize, sort: state.sort }));
+      } catch (err) {
+        // Storage can be blocked. The choice lasts until the page is reloaded.
+      }
     }
 
     /* ---------- Records ---------- */
@@ -2178,42 +2660,62 @@
     }
 
     async function fetchRecords() {
-      showTableSkeleton();
+      if (state.isLoading) return;
+      state.isLoading = true;
+      if (!state.isLoaded) showTableSkeleton();
       try {
         const response = await callAdmin('listRecords');
         if (!response.success) {
           showTableMessage(escapeHtml(response.message), true);
-          return;
+        } else {
+          state.records = response.records;
+          state.isLoaded = true;
+          state.isStale = false;
+          const existing = new Set(state.records.map((record) => record.idNumber));
+          state.selected.forEach((idNumber) => {
+            if (!existing.has(idNumber)) state.selected.delete(idNumber);
+          });
+          fillProjectFilter();
+          applyFilters(true);
+          renderSelectionPreview();
         }
-        state.records = response.records;
-        state.isLoaded = true;
-        const existing = new Set(state.records.map((record) => record.idNumber));
-        state.selected.forEach((idNumber) => {
-          if (!existing.has(idNumber)) state.selected.delete(idNumber);
-        });
-        applySearch();
-        renderSelectionPreview();
       } catch (err) {
         if (err.message !== SESSION_EXPIRED) showTableMessage('The records could not be loaded. Use Refresh to try again.', true);
       }
+      state.isLoading = false;
     }
 
-    function applySearch() {
+    /** Projects in the list plus any still used by a record, so that an older project can still be found. */
+    function fillProjectFilter() {
+      const listed = (App.config && App.config.projects) || [];
+      const used = state.records.map((record) => record.project).filter(Boolean);
+      const projects = [...new Set([...listed, ...used])].sort(byText);
+      if (state.project && !projects.includes(state.project)) state.project = '';
+      $('projectFilter').innerHTML = `<option value="">All projects</option>${projects.map((project) => `<option value="${escapeHtml(project)}">${escapeHtml(project)}</option>`).join('')}`;
+      $('projectFilter').value = state.project;
+    }
+
+    /**
+     * Search looks through every record, not only the page on screen. When a project is chosen,
+     * it looks only within that project.
+     */
+    function applyFilters(keepPage) {
       const term = $('searchBox').value.trim().toLowerCase();
-      state.filtered = state.records.filter((record) =>
-        `${record.firstName} ${record.lastName} ${record.idNumber} ${record.position} ${record.project}`.toLowerCase().includes(term)
-      );
-      state.currentPage = 1;
+      state.filtered = state.records
+        .filter((record) => !state.project || record.project === state.project)
+        .filter((record) => !term || `${record.firstName} ${record.mi} ${record.lastName} ${record.idNumber} ${record.position} ${record.project}`.toLowerCase().includes(term))
+        .sort(SORTS[state.sort] || SORTS[DEFAULT_SORT]);
+      state.currentPage = keepPage ? Math.min(state.currentPage, getTotalPages()) : 1;
       renderTable();
     }
 
     function getTotalPages() {
-      return Math.max(Math.ceil(state.filtered.length / ROWS_PER_PAGE), 1);
+      return Math.max(Math.ceil(state.filtered.length / state.pageSize), 1);
     }
 
     function getPageRecords() {
-      const start = (state.currentPage - 1) * ROWS_PER_PAGE;
-      return state.filtered.slice(start, start + ROWS_PER_PAGE);
+      const start = (state.currentPage - 1) * state.pageSize;
+      return state.filtered.slice(start, start + state.pageSize);
     }
 
     function renderThumbnail(record) {
@@ -2233,13 +2735,21 @@
       return state.notSquare.has(record.idNumber) ? '<span class="crop-note">Not 1x1</span>' : '';
     }
 
+    function renderProject(record) {
+      const earlier = (record.projectHistory || []).length - 1;
+      const note = earlier > 0 ? ` <span class="project-more" title="See the project history in Edit">+${earlier} earlier</span>` : '';
+      return `<span class="clip-cell job-project" title="${escapeHtml(record.project)}">${escapeHtml(record.project)}${note}</span>`;
+    }
+
+    function describeEmptyList() {
+      if (!state.records.length) return 'No records yet. IDs appear here once employees submit the form.';
+      return state.project ? `No records in ${escapeHtml(state.project)} match your search.` : 'No records match your search.';
+    }
+
     function renderTable() {
       const pageRecords = getPageRecords();
       if (!pageRecords.length) {
-        const message = state.records.length
-          ? 'No records match your search.'
-          : 'No records yet. IDs appear here once employees submit the form.';
-        showTableMessage(message);
+        showTableMessage(describeEmptyList());
       } else {
         $('tableBody').innerHTML = pageRecords.map((record) => {
           const id = escapeHtml(record.idNumber);
@@ -2253,7 +2763,7 @@
               <td class="name-cell" title="${escapeHtml(record.firstName)}${middle} ${escapeHtml(record.lastName)}">${escapeHtml(record.firstName)}${middle} ${escapeHtml(record.lastName)}<span class="row-note" data-note-id="${id}">${renderRowNote(record)}</span></td>
               <td class="job-cell">
                 <span class="clip-cell job-position" title="${escapeHtml(record.position)}">${escapeHtml(record.position)}</span>
-                <span class="clip-cell job-project" title="${escapeHtml(record.project)}">${escapeHtml(record.project)}</span>
+                ${renderProject(record)}
               </td>
               <td class="date-cell" data-label="Issued">${escapeHtml(record.dateIssued)}</td>
               <td class="date-cell" data-label="Valid until">${escapeHtml(record.validUntil)}</td>
@@ -2263,30 +2773,61 @@
         }).join('');
       }
       updateListInfo();
+      renderPageNumbers();
       loadPhotosFor(pageRecords).then(refreshVisibleThumbnails).catch(() => {});
+    }
+
+    function describeShowing() {
+      const total = state.filtered.length;
+      const where = state.project ? ` in ${state.project}` : '';
+      if (!total) return `0 records${where}`;
+      const first = (state.currentPage - 1) * state.pageSize + 1;
+      const last = Math.min(first + state.pageSize - 1, total);
+      return `Showing ${first}–${last} of ${total} ${total === 1 ? 'record' : 'records'}${where}`;
     }
 
     function updateListInfo() {
       const count = state.selected.size;
       const pageRecords = getPageRecords();
-      $('pageInfo').textContent = `Page ${state.currentPage} of ${getTotalPages()} (${state.filtered.length} records)`;
+      const total = getTotalPages();
+      $('pageInfo').textContent = describeShowing();
       $('selectionInfo').textContent = count ? `${count} selected` : '';
       $('pdfButton').disabled = !count;
       $('pdfButtonPanel').hidden = !count;
       $('jumpToPrint').hidden = !count;
       $('deleteButton').disabled = !count;
       $('checkAllOnPage').checked = pageRecords.length > 0 && pageRecords.every((record) => state.selected.has(record.idNumber));
-      document.querySelector('[data-page="first"]').disabled = state.currentPage === 1;
       document.querySelector('[data-page="prev"]').disabled = state.currentPage === 1;
-      document.querySelector('[data-page="next"]').disabled = state.currentPage === getTotalPages();
-      document.querySelector('[data-page="last"]').disabled = state.currentPage === getTotalPages();
+      document.querySelector('[data-page="next"]').disabled = state.currentPage === total;
+      const nextCount = Math.min(state.pageSize, state.filtered.length - state.currentPage * state.pageSize);
+      $('nextPageLabel').textContent = nextCount > 0 ? `Next ${nextCount}` : 'Next';
     }
 
-    function changePage(action) {
+    /** Page numbers: the first, the last, and the pages around the current one. */
+    function listPageNumbers(current, total) {
+      const pages = new Set([1, total, current - 1, current, current + 1]);
+      const sorted = [...pages].filter((page) => page >= 1 && page <= total).sort((a, b) => a - b);
+      const items = [];
+      sorted.forEach((page, index) => {
+        if (index && page - sorted[index - 1] > 1) items.push('gap');
+        items.push(page);
+      });
+      return items;
+    }
+
+    function renderPageNumbers() {
       const total = getTotalPages();
-      const targets = { first: 1, prev: state.currentPage - 1, next: state.currentPage + 1, last: total };
-      state.currentPage = Math.min(Math.max(targets[action], 1), total);
+      $('pageNumbers').innerHTML = total === 1 ? '' : listPageNumbers(state.currentPage, total).map((item) => {
+        if (item === 'gap') return '<span class="page-gap" aria-hidden="true">…</span>';
+        const isCurrent = item === state.currentPage;
+        return `<button class="page-number ${isCurrent ? 'is-current' : ''}" type="button" data-page-number="${item}" aria-label="Page ${item}" ${isCurrent ? 'aria-current="page"' : ''}>${item}</button>`;
+      }).join('');
+    }
+
+    function goToPage(page) {
+      state.currentPage = Math.min(Math.max(page, 1), getTotalPages());
       renderTable();
+      $('recordsPane').querySelector('.table-card').scrollIntoView({ block: 'nearest' });
     }
 
     /* ---------- Photos ---------- */
@@ -2317,7 +2858,7 @@
       }
     }
 
-    /** Lets an admin drag, zoom, rotate, or crop a saved photo, then saves the result. */
+    /** Lets an admin drag, zoom, rotate, brighten, or crop a saved photo, then saves the result. */
     async function adjustRecordPhoto(idNumber) {
       const src = state.photos.get(idNumber);
       if (!src) return;
@@ -2418,17 +2959,56 @@
 
     /* ---------- Editing ---------- */
 
+    const toPersonKey = (record) => [record.firstName, record.lastName]
+      .map((part) => String(part || '').normalize('NFD').replace(/\p{M}/gu, '').toUpperCase().replace(/[^\p{L}\p{N}]/gu, ''))
+      .concat(record.dob)
+      .join('|');
+
+    /** This ID's projects, and every ID the same person has had, newest first. */
+    function renderHistory(record) {
+      const projects = (record.projectHistory || []).length
+        ? record.projectHistory
+        : [{ date: record.dateIssued, project: record.project }];
+      const projectRows = projects.slice().reverse().map((entry, index) => `
+        <li><span class="history-date">${escapeHtml(entry.date)}</span><span>${escapeHtml(entry.project)}${index === 0 ? ' <span class="history-now">Latest</span>' : ''}</span></li>`).join('');
+
+      const key = toPersonKey(record);
+      const others = state.records
+        .filter((other) => toPersonKey(other) === key)
+        .sort((a, b) => byText(b.timestamp, a.timestamp));
+      const idRows = others.map((other) => `
+        <li class="${other.idNumber === record.idNumber ? 'is-this' : ''}">
+          <span class="history-id">${escapeHtml(other.idNumber)}</span>
+          <span>${escapeHtml(other.position)}, ${escapeHtml(other.project)}<br><span class="history-meta">Issued ${escapeHtml(other.dateIssued)}</span></span>
+          <span class="badge-status status-${escapeHtml(other.status)}">${escapeHtml(other.status)}</span>
+        </li>`).join('');
+
+      const source = record.entrySource === 'GOOGLE FORM' ? 'Google Form' : 'web app';
+      const sentBy = record.submittedBy
+        ? `<p class="history-sent">Last sent from the ${source} by <strong>${escapeHtml(record.submittedBy)}</strong></p>`
+        : '';
+      return `
+        ${sentBy}
+        <h3 class="history-title">Projects of this ID</h3>
+        <ol class="history-list">${projectRows}</ol>
+        <h3 class="history-title">All IDs of this person</h3>
+        <ol class="history-list history-ids">${idRows}</ol>`;
+    }
+
     function openEditPanel(idNumber) {
       const record = state.records.find((candidate) => candidate.idNumber === idNumber);
       if (!record) return;
 
       state.lastFocus = document.activeElement;
       $('editIdNumber').value = record.idNumber;
-      $('editStatus').value = record.status;
+      $('editStatus').value = ['VALID', 'REVOKED', 'LOST'].includes(record.status) ? record.status : 'REVOKED';
       $('editFirst').value = record.firstName;
       $('editMi').value = record.mi;
       $('editLast').value = record.lastName;
       $('editDob').value = displayToIsoDate(record.dob);
+      $('editDateIssued').value = displayToIsoDate(record.dateIssued);
+      $('editDateIssued').max = new Date().toISOString().slice(0, 10);
+      $('editValidUntil').value = record.validUntil;
       $('editAddress').value = record.address;
       $('editEmgName').value = record.emgName;
       $('editEmgRel').value = record.emgRel;
@@ -2436,6 +3016,7 @@
       $('editEmgAddress').value = record.emgAddress;
       fillSelect($('editPosition'), App.config.positions, 'Select position', record.position);
       fillSelect($('editProject'), App.config.projects, 'Select project or survey', record.project);
+      $('editHistory').innerHTML = renderHistory(record);
 
       $('editRemovePhoto').checked = false;
       $('editPhoto').value = '';
@@ -2452,9 +3033,10 @@
     }
 
     function closeEditPanel() {
+      if (!$('editPanel').classList.contains('is-open')) return;
       $('editPanel').classList.remove('is-open');
       $('panelBackdrop').classList.remove('is-open');
-      if (state.lastFocus) state.lastFocus.focus();
+      if (state.lastFocus && state.lastFocus.isConnected) state.lastFocus.focus();
     }
 
     async function handleEditPhotoChosen(event) {
@@ -2495,6 +3077,7 @@
       const payload = {
         idNumber,
         status: $('editStatus').value,
+        dateIssued: $('editDateIssued').value,
         firstName: $('editFirst').value,
         mi: $('editMi').value,
         lastName: $('editLast').value,
@@ -2535,8 +3118,17 @@
     async function handleDelete() {
       const selected = getSelectedRecords();
       if (!selected.length) return;
-      const names = selected.map((record) => `${record.idNumber} - ${record.firstName} ${record.lastName}`).join('\n');
-      if (!confirm(`Permanently delete these records?\n\n${names}`)) return;
+      const list = selected.map((record) => `
+        <li><span class="dialog-id">${escapeHtml(record.idNumber)}</span> ${escapeHtml(record.firstName)} ${escapeHtml(record.lastName)}</li>`).join('');
+      const confirmed = await AppDialog.open({
+        title: `Delete ${selected.length} ${selected.length === 1 ? 'record' : 'records'} permanently?`,
+        message: 'They are removed from the ID_Records tab, and their QR codes stop working. Their numbers are never given out again. A copy of each stays in the Audit_Log.',
+        bodyHtml: `<ul class="dialog-list">${list}</ul>`,
+        confirmLabel: 'Delete permanently',
+        cancelLabel: 'Keep them',
+        tone: 'danger'
+      });
+      if (!confirmed) return;
 
       const button = $('deleteButton');
       setButtonBusy(button, true, 'Deleting...');
@@ -2567,13 +3159,27 @@
       return pages;
     }
 
+    /** A random password nobody keeps, so that the PDF's lock can never be lifted with one. */
+    function createOwnerPassword() {
+      return Array.from(crypto.getRandomValues(new Uint8Array(24)), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    /**
+     * The cards are drawn as pictures, so the PDF has no text or form fields to edit. It is also
+     * locked: it opens and prints, but PDF editors that respect the lock refuse changes and copying.
+     */
     function getPdfOptions() {
       return {
         margin: 0,
         filename: 'ID_Cards.pdf',
         image: { type: 'jpeg', quality: 0.95 },
         html2canvas: { scale: PDF_RENDER_SCALE, useCORS: true, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'in', format: [8.5, 13], orientation: 'portrait' }
+        jsPDF: {
+          unit: 'in',
+          format: [8.5, 13],
+          orientation: 'portrait',
+          encryption: { userPassword: '', ownerPassword: createOwnerPassword(), userPermissions: ['print'] }
+        }
       };
     }
 
@@ -2613,13 +3219,31 @@
 
     /* ---------- Setup ---------- */
 
-    function init() {
-      $('signInEmailStep').addEventListener('submit', handleRequestCode);
-      $('signInCodeStep').addEventListener('submit', handleVerifyCode);
-      $('changeEmailButton').addEventListener('click', showSignIn);
-      $('signOutButton').addEventListener('click', handleSignOut);
+    function fillSortAndSizeControls() {
+      $('sortSelect').value = state.sort;
+      $('pageSizeSelect').value = String(state.pageSize);
+    }
 
-      $('searchBox').addEventListener('input', applySearch);
+    function init() {
+      readViewPrefs();
+      fillSortAndSizeControls();
+
+      $('searchBox').addEventListener('input', () => applyFilters(false));
+      $('projectFilter').addEventListener('change', (event) => {
+        state.project = event.target.value;
+        applyFilters(false);
+      });
+      $('sortSelect').addEventListener('change', (event) => {
+        state.sort = SORTS[event.target.value] ? event.target.value : DEFAULT_SORT;
+        saveViewPrefs();
+        applyFilters(false);
+      });
+      $('pageSizeSelect').addEventListener('change', (event) => {
+        const size = Number(event.target.value);
+        state.pageSize = PAGE_SIZES.includes(size) ? size : PAGE_SIZES[0];
+        saveViewPrefs();
+        applyFilters(false);
+      });
       $('refreshButton').addEventListener('click', fetchRecords);
       $('deleteButton').addEventListener('click', handleDelete);
       $('pdfButton').addEventListener('click', handleSavePdf);
@@ -2629,8 +3253,11 @@
       $('tableBody').addEventListener('click', handleTableClick);
       $('tableBody').addEventListener('change', handleTableChange);
       $('sliderContainer').addEventListener('click', handleCropClick);
-      document.querySelectorAll('[data-page]').forEach((button) => {
-        button.addEventListener('click', () => changePage(button.dataset.page));
+      document.querySelector('[data-page="prev"]').addEventListener('click', () => goToPage(state.currentPage - 1));
+      document.querySelector('[data-page="next"]').addEventListener('click', () => goToPage(state.currentPage + 1));
+      $('pageNumbers').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-page-number]');
+        if (button) goToPage(Number(button.dataset.pageNumber));
       });
 
       $('editPanel').addEventListener('submit', handleSaveEdit);
@@ -2640,32 +3267,38 @@
       $('editPhoto').addEventListener('change', handleEditPhotoChosen);
       $('editAdjustPhoto').addEventListener('click', handleEditAdjustPhoto);
       document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && $('editPanel').classList.contains('is-open')) closeEditPanel();
+        if (event.key === 'Escape' && $('editPanel').classList.contains('is-open') && !AppDialog.isOpen()) closeEditPanel();
       });
     }
 
-    return { init, open, showTab, callAdmin, fetchRecords, SESSION_EXPIRED };
+    return { init, start, stop, open, showTab, callAdmin, fetchRecords, markStale, SESSION_EXPIRED };
   })();
 </script>
 
   <script>
   /**
    * The approvals queue. Requests never pop up over the screen. A badge on the bell and
-   * on the tab shows the count, and the queue is a compact list grouped by project, so
-   * that a long queue stays easy to scan and decide on in batches.
+   * on the tab shows the count, and the queue is a compact list grouped by the project each
+   * person applied for, so that a long queue stays easy to scan and decide on in batches.
    */
   const Approvals = (() => {
     const POLL_INTERVAL_MS = 60000;
     const ROWS_PER_GROUP = 10;
-    const DECISION_BATCH_SIZE = 25;
+    /** The server decides at most 10 at a time, so that submissions keep moving between batches. */
+    const DECISION_BATCH_SIZE = 10;
     const CONFIRM_WINDOW_MS = 4000;
     const POSITION_TYPES = ['POSITION CHANGE', 'RETURN TO POSITION'];
+    const CORRECTION_TYPES = ['CORRECTION', 'POSSIBLE DUPLICATE'];
+    const DUPLICATE = 'POSSIBLE DUPLICATE';
     const TYPE_LABELS = {
       'RENEWAL': 'Renewal',
       'POSITION CHANGE': 'Position change',
       'RETURN TO POSITION': 'Back to earlier position',
       'REPLACEMENT': 'Lost ID replacement',
+      'CORRECTION': 'Correction',
+      'POSSIBLE DUPLICATE': 'Possible duplicate',
       'ACTIVE': 'Already active',
+      'NEW YEAR': 'New year ID',
       'NEW': 'New ID'
     };
 
@@ -2789,7 +3422,9 @@
         if (state.filter === 'renewal' && request.type !== 'RENEWAL') return false;
         if (state.filter === 'position' && !POSITION_TYPES.includes(request.type)) return false;
         if (state.filter === 'lost' && request.type !== 'REPLACEMENT') return false;
-        return `${request.firstName} ${request.lastName} ${request.project}`.toLowerCase().includes(term);
+        if (state.filter === 'correction' && !CORRECTION_TYPES.includes(request.type)) return false;
+        const lookalike = request.lookalike ? request.lookalike.idNumber : '';
+        return `${request.firstName} ${request.lastName} ${request.project} ${request.currentIdNumber} ${lookalike}`.toLowerCase().includes(term);
       });
     }
 
@@ -2847,9 +3482,11 @@
         change.label,
         `${change.from ? `<span class="fact-from">${escapeHtml(change.from)}</span> ` : ''}${escapeHtml(change.to)}`
       )).join('');
-      const current = request.currentIdNumber
+      const current = request.currentIdNumber && !request.lookalike
         ? renderFact('Current ID', `${escapeHtml(request.currentIdNumber)} (${escapeHtml(request.currentStatus)})`)
         : '';
+      const lookalike = request.lookalike ? renderLookalike(request.lookalike) : '';
+      const sentBy = request.submittedBy ? renderFact('Sent by', escapeHtml(request.submittedBy)) : '';
 
       return `
         <div class="request-detail">
@@ -2860,23 +3497,52 @@
               ${renderPhotoFrame(request.hasNewPhoto ? 'New' : 'No new photo', photos ? photos.proposed : '', !photos && request.hasNewPhoto, renderNewPhotoTools(photos))}
             </div>
             <div class="detail-facts">
+              ${lookalike}
               ${current}
               ${renderFact('Position', escapeHtml(request.position))}
+              ${renderFact('Applying for', escapeHtml(request.project))}
               ${renderFact('Date of birth', escapeHtml(request.dob))}
               ${changes}
               ${renderFact('Sent from', escapeHtml(request.entrySource))}
+              ${sentBy}
             </div>
           </div>
         </div>`;
     }
 
+    /** The ID this request resembles, so that an admin can tell a typo from a different person. */
+    function renderLookalike(record) {
+      const initial = record.mi ? ` ${escapeHtml(record.mi)}.` : '';
+      return `
+        <div class="lookalike">
+          <span class="lookalike-label">Looks like</span>
+          <span class="lookalike-id">${escapeHtml(record.idNumber)}</span>
+          <strong>${escapeHtml(record.firstName)}${initial} ${escapeHtml(record.lastName)}</strong>
+          <span>Born ${escapeHtml(record.dob)}. ${escapeHtml(record.position)}, ${escapeHtml(record.project)}. ${escapeHtml(record.status)}.</span>
+        </div>`;
+    }
+
+    function renderActions(request) {
+      if (request.type === DUPLICATE) {
+        return `
+          <button class="btn btn-primary" type="button" data-action="approve" data-choice="correct" title="Fix the existing ID with these details. It keeps its number.">${iconHtml('check')} Correct ID</button>
+          <button class="btn btn-quiet" type="button" data-action="approve" data-choice="new" title="This is a different person. Give a new ID number.">New ID</button>
+          <button class="btn btn-danger-quiet" type="button" data-action="decline">Decline</button>`;
+      }
+      return `
+        <button class="btn btn-primary" type="button" data-action="approve">${iconHtml('check')} Approve</button>
+        <button class="btn btn-danger-quiet" type="button" data-action="decline">Decline</button>`;
+    }
+
     function renderRow(request) {
       const id = escapeHtml(request.requestId);
       const isOpen = state.openDetails.has(request.requestId);
+      const isDuplicate = request.type === DUPLICATE;
+      const checkTitle = isDuplicate ? 'Check this one by itself: correct the existing ID, or give a new one' : '';
       return `
         <article class="request-row ${isOpen ? 'is-open' : ''}" data-request-id="${id}">
           <div class="request-line">
-            <label class="check-hit"><input type="checkbox" data-action="select" aria-label="Select ${escapeHtml(formatName(request))}" ${state.selected.has(request.requestId) ? 'checked' : ''}></label>
+            <label class="check-hit" title="${checkTitle}"><input type="checkbox" data-action="select" aria-label="Select ${escapeHtml(formatName(request))}" ${state.selected.has(request.requestId) ? 'checked' : ''} ${isDuplicate ? 'disabled' : ''}></label>
             <button class="request-main" type="button" data-action="details" aria-expanded="${isOpen}">
               <span><span class="request-name">${escapeHtml(formatName(request))}</span><span class="request-position">${escapeHtml(request.position)}</span></span>
               <span class="request-outcome">${renderEffect(request.effect)}</span>
@@ -2884,10 +3550,7 @@
               <span class="request-time">${escapeHtml(formatAge(request.requestedAt))}</span>
               <svg class="icon request-chevron" aria-hidden="true"><use href="#i-chevron-down"/></svg>
             </button>
-            <div class="request-actions">
-              <button class="btn btn-primary" type="button" data-action="approve">${iconHtml('check')} Approve</button>
-              <button class="btn btn-danger-quiet" type="button" data-action="decline">Decline</button>
-            </div>
+            <div class="request-actions ${isDuplicate ? 'has-choice' : ''}">${renderActions(request)}</div>
           </div>
           <div class="t-acc-panel"><div class="t-acc-inner">${isOpen ? renderDetail(request) : ''}</div></div>
         </article>`;
@@ -2898,7 +3561,8 @@
       const isExpanded = state.expandedGroups.has(project);
       const visible = isExpanded ? requests : requests.slice(0, ROWS_PER_GROUP);
       const hiddenCount = requests.length - visible.length;
-      const allSelected = requests.every((request) => state.selected.has(request.requestId));
+      const selectable = requests.filter((request) => request.type !== DUPLICATE);
+      const allSelected = selectable.length > 0 && selectable.every((request) => state.selected.has(request.requestId));
       const label = escapeHtml(project);
 
       return `
@@ -2906,7 +3570,7 @@
           <div class="group-head">
             <label class="check-hit"><input type="checkbox" data-action="select-group" aria-label="Select all in ${label}" ${allSelected ? 'checked' : ''}></label>
             <button class="group-toggle" type="button" data-action="toggle-group" aria-expanded="${isOpen}">
-              <span>${label}</span>
+              <span><span class="group-caption">Applying for</span> ${label}</span>
               <span class="group-count">${requests.length} waiting</span>
               <svg class="icon group-chevron" aria-hidden="true"><use href="#i-chevron-down"/></svg>
             </button>
@@ -2924,7 +3588,7 @@
         <div class="empty-state">
           ${iconHtml(isFiltered ? 'search' : 'inbox')}
           <h3>${isFiltered ? 'No requests match your search' : 'No requests are waiting'}</h3>
-          <p>${isFiltered ? 'Try another name or project, or choose All.' : 'Renewals, position changes, and lost IDs will appear here for any admin to approve.'}</p>
+          <p>${isFiltered ? 'Try another name or project, or choose All.' : 'Corrections, renewals, position changes, and lost IDs appear here for any admin to approve.'}</p>
         </div>`;
     }
 
@@ -2956,11 +3620,14 @@
         .filter(Boolean);
     }
 
-    /** Sends decisions in batches, then removes the decided rows from the list. */
-    async function decide(functionName, ids) {
+    /** Sends decisions in batches, then removes the decided rows from the list. `choice` answers a possible duplicate. */
+    async function decide(functionName, ids, choice) {
       const messages = [];
       for (let start = 0; start < ids.length; start += DECISION_BATCH_SIZE) {
-        const response = await Admin.callAdmin(functionName, ids.slice(start, start + DECISION_BATCH_SIZE));
+        const batch = ids.slice(start, start + DECISION_BATCH_SIZE);
+        const response = choice
+          ? await Admin.callAdmin(functionName, batch, choice)
+          : await Admin.callAdmin(functionName, batch);
         messages.push(response.message);
         if (!response.success) throw new Error(response.message);
       }
@@ -2976,13 +3643,13 @@
       setCount(state.requests.length);
       render();
       showToast(messages.join(' '));
-      Admin.fetchRecords();
+      Admin.markStale();
     }
 
-    async function runDecision(button, busyLabel, functionName, ids) {
+    async function runDecision(button, busyLabel, functionName, ids, choice) {
       setButtonBusy(button, true, busyLabel);
       try {
-        await decide(functionName, ids);
+        await decide(functionName, ids, choice);
       } catch (err) {
         if (err.message !== Admin.SESSION_EXPIRED) {
           showToast(err.message || 'That could not be saved. Please try again.');
@@ -3062,7 +3729,7 @@
       if (action === 'retry') fetchRequests();
       if (action === 'details') toggleDetails(row, id);
       if (action === 'adjust-photo') adjustRequestPhoto(row, id);
-      if (action === 'approve') runDecision(trigger, 'Approving...', 'approveRequests', [id]);
+      if (action === 'approve') runDecision(trigger, 'Approving...', 'approveRequests', [id], trigger.dataset.choice);
       if (action === 'decline' && !needsConfirmation(trigger)) runDecision(trigger, 'Declining...', 'declineRequests', [id]);
       if (action === 'toggle-group') {
         const project = group.dataset.project;
@@ -3089,7 +3756,7 @@
       if (action === 'select-group') {
         const project = event.target.closest('[data-project]').dataset.project;
         getVisibleRequests()
-          .filter((request) => escapeHtml(request.project) === escapeHtml(project))
+          .filter((request) => escapeHtml(request.project) === escapeHtml(project) && request.type !== DUPLICATE)
           .forEach((request) => {
             if (event.target.checked) state.selected.add(request.requestId);
             else state.selected.delete(request.requestId);
@@ -3109,6 +3776,12 @@
         if (!needsConfirmation(event.currentTarget)) runDecision(event.currentTarget, 'Declining...', 'declineRequests', [...state.selected]);
       });
       $('approvalBell').addEventListener('click', () => AppShell.showApprovals());
+      $('approvalRefresh').addEventListener('click', async (event) => {
+        const icon = event.currentTarget.querySelector('.icon');
+        icon.classList.add('spin');
+        await fetchRequests();
+        icon.classList.remove('spin');
+      });
       filterTabs = createTabs($('approvalFilters'), (filter) => {
         state.filter = filter;
         render();
@@ -3120,10 +3793,107 @@
 </script>
 
   <script>
-  /** Page start-up and navigation. */
+  /**
+   * The admin manual and the IT documentation. They are fetched from the server only after an
+   * admin signs in, so they never sit on the public page, and are shown exactly as the files look.
+   */
+  const Guides = (() => {
+    const TITLES = { admin: 'Admin manual', it: 'IT documentation' };
+    /**
+     * Added to each guide. A page shown this way would take "#part" links as links to this app,
+     * so they scroll within the guide instead. Links to other sites open in a new tab.
+     */
+    const LINK_FIX = `<script>
+      document.addEventListener('click', function (event) {
+        var link = event.target.closest('a[href]');
+        if (!link) return;
+        var href = link.getAttribute('href');
+        if (href.charAt(0) !== '#') {
+          link.target = '_blank';
+          return;
+        }
+        event.preventDefault();
+        var target = href.length > 1 ? document.getElementById(decodeURIComponent(href.slice(1))) : null;
+        if (target) target.scrollIntoView({ block: 'start' });
+        else if (href === '#') window.scrollTo(0, 0);
+      }, true);
+    <\/script>`;
+
+    const loaded = new Map();
+    let openName = '';
+    let lastFocus = null;
+
+    async function fetchGuide(name) {
+      if (loaded.has(name)) return loaded.get(name);
+      const response = await Admin.callAdmin('getGuide', name);
+      if (!response.success) throw new Error(response.message);
+      loaded.set(name, response.html);
+      return response.html;
+    }
+
+    function show(name, html) {
+      openName = name;
+      lastFocus = document.activeElement;
+      $('guideViewerTitle').textContent = TITLES[name];
+      $('guideFrame').title = TITLES[name];
+      $('guideFrame').srcdoc = html.replace(/<\/body>/i, `${LINK_FIX}</body>`);
+      $('guideViewer').hidden = false;
+      document.body.classList.add('has-guide-open');
+      $('guideClose').focus();
+    }
+
+    function close() {
+      $('guideViewer').hidden = true;
+      $('guideFrame').removeAttribute('srcdoc');
+      document.body.classList.remove('has-guide-open');
+      openName = '';
+      if (lastFocus && lastFocus.isConnected) lastFocus.focus();
+    }
+
+    /** Opens the guide in its own tab, as a file of its own, for reading side by side or printing. */
+    function openInNewTab() {
+      const html = loaded.get(openName);
+      if (!html) return;
+      const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+      const tab = window.open(url, '_blank');
+      if (tab) tab.opener = null;
+      else showToast('Your browser blocked the new tab. Allow pop-ups for this site, then try again.');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+
+    async function handleOpen(button) {
+      const name = button.dataset.guide;
+      setButtonBusy(button, true, 'Opening...');
+      try {
+        show(name, await fetchGuide(name));
+      } catch (err) {
+        if (err.message !== Admin.SESSION_EXPIRED) showToast(err.message && !/fetch/i.test(err.message) ? err.message : 'The guide could not be opened. Please try again.');
+      }
+      setButtonBusy(button, false);
+    }
+
+    function init() {
+      $('view-guides').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-guide]');
+        if (button) handleOpen(button);
+      });
+      $('guideClose').addEventListener('click', close);
+      $('guideNewTab').addEventListener('click', openInNewTab);
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !$('guideViewer').hidden) close();
+      });
+    }
+
+    return { init, close };
+  })();
+</script>
+
+  <script>
+  /** Page start-up, sign-in state, and navigation. */
   const AppShell = (() => {
     const CONFIG_ATTEMPTS = 4;
     const CONFIG_RETRY_MS = 3000;
+    const VIEWS = ['signin', 'form', 'admin', 'guides'];
 
     function setActiveNav(name) {
       document.querySelectorAll('.nav-link').forEach((link) => {
@@ -3139,29 +3909,75 @@
       $('sidebarToggle').setAttribute('aria-expanded', String(isOpen));
     }
 
-    /** Swaps the Admin link for Records and Approvals once someone has signed in. */
-    function setSignedIn(isSignedIn, email) {
-      $('navSignIn').hidden = isSignedIn;
-      $('navRecords').hidden = !isSignedIn;
-      $('navApprovals').hidden = !isSignedIn;
-      $('adminIdentityBox').hidden = !isSignedIn;
-      $('adminIdentity').textContent = email || '';
+    function showSection(name) {
+      VIEWS.forEach((view) => {
+        $(`view-${view}`).hidden = view !== name;
+      });
+      $('mainScroll').scrollTop = 0;
+    }
+
+    function isAdmin() {
+      const session = Session.get();
+      return Boolean(session && session.isAdmin);
+    }
+
+    /** The menu shows the ID form to everyone signed in, and Records, Approvals, and Guides to admins. */
+    function applySession(session) {
+      const signedIn = Boolean(session);
+      const admin = signedIn && session.isAdmin;
+      $('sidebar').hidden = !signedIn;
+      $('topbarEnd').hidden = !signedIn;
+      $('navRecords').hidden = !admin;
+      $('navApprovals').hidden = !admin;
+      $('navGuides').hidden = !admin;
+      $('identityBox').hidden = !signedIn;
+      $('identityEmail').textContent = signedIn ? session.email : '';
+      if (admin) Admin.start();
+      else Admin.stop();
       setMenuOpen(false);
     }
 
-    /** A view is the ID form, or one of the admin screens: admin (sign-in), records, or approvals. */
+    /** A view is the ID form, Records, Approvals, or Guides. Admin views fall back to the form for others. */
     function showView(view) {
-      const isForm = view === 'form';
-      setActiveNav(view);
-      $('view-form').hidden = !isForm;
-      $('view-admin').hidden = isForm;
+      if (!Session.get()) {
+        showSignIn();
+        return;
+      }
+      const wanted = ['records', 'approvals', 'guides'].includes(view) && !isAdmin() ? 'form' : view;
+      setActiveNav(wanted);
       setMenuOpen(false);
-      if (isForm) IdForm.refreshLayout();
-      else Admin.open(view);
+      if (wanted === 'form') {
+        showSection('form');
+        IdForm.refreshLayout();
+      } else if (wanted === 'guides') {
+        showSection('guides');
+      } else {
+        showSection('admin');
+        Admin.open(wanted);
+      }
     }
 
     function showApprovals() {
       showView('approvals');
+    }
+
+    function showSignIn() {
+      applySession(null);
+      showSection('signin');
+      Session.prepare(App.config);
+    }
+
+    /** A message means the session ended by itself, so the form keeps its answers. Signing out empties it. */
+    function handleSessionChange(session, message) {
+      if (!session) {
+        if (message) showToast(message);
+        else IdForm.clear();
+        showSignIn();
+        return;
+      }
+      applySession(session);
+      if (!$('view-signin').hidden) showView(session.isAdmin ? 'records' : 'form');
+      else if (!session.isAdmin && !$('view-admin').hidden) showView('form');
     }
 
     /** Google can refuse a call while many people are using the app, so this tries a few times. */
@@ -3172,6 +3988,7 @@
           if (!response.success) throw new Error(response.message);
           App.config = response;
           IdForm.applyConfig(response);
+          if (!Session.get()) Session.prepare(response);
           return;
         } catch (err) {
           if (attempt < CONFIG_ATTEMPTS) await wait(CONFIG_RETRY_MS * attempt);
@@ -3193,6 +4010,7 @@
         event.preventDefault();
         showView('form');
       });
+      $('signOutButton').addEventListener('click', () => Session.signOut());
       $('sidebarToggle').addEventListener('click', () => setMenuOpen(!$('sidebar').classList.contains('open')));
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') setMenuOpen(false);
@@ -3202,14 +4020,25 @@
       });
 
       initTextBoxes();
+      AppDialog.init();
       PhotoCropper.init();
       IdForm.init();
       Admin.init();
       Approvals.init();
+      Guides.init();
+      Session.init(handleSessionChange);
+
+      const saved = Session.restore();
+      if (saved) {
+        applySession(saved);
+        showView(saved.isAdmin ? 'records' : 'form');
+      } else {
+        showSignIn();
+      }
       loadConfig();
     }
 
-    return { start, showApprovals, setActiveNav, setSignedIn };
+    return { start, showApprovals, showView, setActiveNav, isAdmin };
   })();
 
   AppShell.start();
