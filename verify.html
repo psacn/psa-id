@@ -112,7 +112,7 @@
   .brand-text strong { display: block; font-size: 18px; font-weight: 800; line-height: 1.15; color: #ffffff; }
   .brand-text small { display: block; font-size: 12.5px; font-weight: 500; line-height: 1.25; color: var(--on-ink-soft); }
 
-  .spin { animation: spin 0.9s linear infinite; }
+  .spin, .is-refreshing .icon { animation: spin 0.9s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Success check, from transitions.dev. The path length of the check below is 36. */
@@ -166,6 +166,8 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+    /* A spinner says that something is still loading, so it keeps turning. */
+    .spin, .is-refreshing .icon { animation-duration: 0.9s !important; animation-iteration-count: infinite !important; }
     .t-success-check { animation: none !important; opacity: 1; }
     .t-success-check svg path { animation: none !important; stroke-dashoffset: 0 !important; }
   }

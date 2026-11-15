@@ -114,7 +114,7 @@
   .brand-text strong { display: block; font-size: 18px; font-weight: 800; line-height: 1.15; color: #ffffff; }
   .brand-text small { display: block; font-size: 12.5px; font-weight: 500; line-height: 1.25; color: var(--on-ink-soft); }
 
-  .spin { animation: spin 0.9s linear infinite; }
+  .spin, .is-refreshing .icon { animation: spin 0.9s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* Success check, from transitions.dev. The path length of the check below is 36. */
@@ -168,6 +168,8 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+    /* A spinner says that something is still loading, so it keeps turning. */
+    .spin, .is-refreshing .icon { animation-duration: 0.9s !important; animation-iteration-count: infinite !important; }
     .t-success-check { animation: none !important; opacity: 1; }
     .t-success-check svg path { animation: none !important; stroke-dashoffset: 0 !important; }
   }
@@ -197,6 +199,8 @@
   .icon-button:hover { background: var(--surface-sunken); }
   .icon-button:active:not(:disabled) { transform: scale(0.96); }
   .icon-button .icon { width: 20px; height: 20px; }
+  .icon-button.is-refreshing { background: var(--accent-soft); cursor: progress; }
+  table[aria-busy="true"], #approvalList[aria-busy="true"] { opacity: 0.55; transition: opacity var(--duration-quick) ease-out; }
 
   /* Notification badge */
   .t-badge { position: absolute; top: 2px; right: 0; pointer-events: none; }
@@ -1350,6 +1354,32 @@
       delete button.dataset.originalHtml;
     }
     button.disabled = isBusy;
+  }
+
+  /** A refresh spins for at least this long, so a quick reply still shows that it ran. */
+  const REFRESH_MIN_MS = 600;
+
+  /**
+   * Runs a refresh button's task: the icon spins, the list it reloads dims, and the button rests until
+   * the task ends. A toast then says it worked. The task returns false when it failed and said so itself.
+   */
+  async function runRefresh(button, region, task, doneMessage) {
+    if (button.classList.contains('is-refreshing')) return;
+    const started = Date.now();
+    button.classList.add('is-refreshing');
+    button.setAttribute('aria-busy', 'true');
+    if (region) region.setAttribute('aria-busy', 'true');
+    let ok = false;
+    try {
+      ok = (await task()) !== false;
+    } finally {
+      const left = REFRESH_MIN_MS - (Date.now() - started);
+      if (left > 0) await wait(left);
+      button.classList.remove('is-refreshing');
+      button.removeAttribute('aria-busy');
+      if (region) region.removeAttribute('aria-busy');
+    }
+    if (ok && doneMessage) showToast(doneMessage);
   }
 
   function loadScriptOnce(url, integrity) {
@@ -2654,7 +2684,7 @@
     }
 
     async function fetchRecords() {
-      if (state.isLoading) return;
+      if (state.isLoading) return false;
       state.isLoading = true;
       if (!state.isLoaded) showTableSkeleton();
       try {
@@ -2673,10 +2703,13 @@
           applyFilters(true);
           renderSelectionPreview();
         }
+        state.isLoading = false;
+        return response.success;
       } catch (err) {
         if (err.message !== SESSION_EXPIRED) showTableMessage('The records could not be loaded. Use Refresh to try again.', true);
       }
       state.isLoading = false;
+      return false;
     }
 
     /** Projects in the list plus any still used by a record, so that an older project can still be found. */
@@ -3238,7 +3271,9 @@
         saveViewPrefs();
         applyFilters(false);
       });
-      $('refreshButton').addEventListener('click', fetchRecords);
+      $('refreshButton').addEventListener('click', (event) => {
+        runRefresh(event.currentTarget, $('tableBody').closest('table'), fetchRecords, 'Records refreshed.');
+      });
       $('deleteButton').addEventListener('click', handleDelete);
       $('pdfButton').addEventListener('click', handleSavePdf);
       $('pdfButtonPanel').addEventListener('click', () => $('pdfButton').click());
@@ -3380,7 +3415,7 @@
     }
 
     async function fetchRequests() {
-      if (state.isLoading) return;
+      if (state.isLoading) return false;
       state.isLoading = true;
       if (!state.hasLoaded) renderLoading();
       try {
@@ -3395,10 +3430,13 @@
         } else {
           renderError(response.message);
         }
+        state.isLoading = false;
+        return response.success;
       } catch (err) {
         if (err.message !== Admin.SESSION_EXPIRED) renderError('The requests could not be loaded.');
       }
       state.isLoading = false;
+      return false;
     }
 
     function renderError(message) {
@@ -3854,11 +3892,8 @@
         if (!needsConfirmation(event.currentTarget)) runDecision(event.currentTarget, 'Declining...', 'declineRequests', [...state.selected]);
       });
       $('approvalBell').addEventListener('click', () => AppShell.showApprovals());
-      $('approvalRefresh').addEventListener('click', async (event) => {
-        const icon = event.currentTarget.querySelector('.icon');
-        icon.classList.add('spin');
-        await fetchRequests();
-        icon.classList.remove('spin');
+      $('approvalRefresh').addEventListener('click', (event) => {
+        runRefresh(event.currentTarget, $('approvalList'), fetchRequests, 'Requests refreshed.');
       });
       filterTabs = createTabs($('approvalFilters'), (filter) => {
         state.filter = filter;
