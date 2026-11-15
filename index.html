@@ -3473,8 +3473,14 @@
 
     /** What approving does, plus whether the card must be printed again, from the ticks as they are now. */
     function describeOutcome(request) {
-      if (!request.pickable || request.type === DUPLICATE) return renderEffect(request.effect);
-      const note = getPicks(request).size ? 'Print the card again.' : 'The printed card stays in use.';
+      if (!request.pickable) return renderEffect(request.effect);
+      const changesCard = getPicks(request).size > 0;
+      let note = changesCard ? 'Print the card again.' : 'The printed card stays in use.';
+      if (request.type === DUPLICATE) {
+        // New ID, or Correct ID into a new number, always needs a new card.
+        if (!request.correctKeepsNumber) return renderEffect(request.effect);
+        note = changesCard ? 'With Correct ID, print the card again.' : 'With Correct ID, the printed card stays in use.';
+      }
       return `${renderEffect(request.effect)} <strong class="card-note">${note}</strong>`;
     }
 
