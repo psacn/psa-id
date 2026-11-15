@@ -265,7 +265,7 @@
     <main class="doc-sheet">
       <div class="doc-title">
         <h1><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg> Privacy notice</h1>
-        <p class="doc-updated">Updated November 14, 2026</p>
+        <p class="doc-updated">Updated November 15, 2026</p>
       </div>
 
       <div class="doc-body">
@@ -276,12 +276,14 @@
           <li><strong>From your Google account, when you sign in:</strong> your email address and name. Google confirms that the email address is real. We do not get your password, contacts, files, or anything else in your Google account.</li>
           <li><strong>From the ID form:</strong> name, position, project or survey, date of birth, address, photo (optional), and an emergency contact's name, relationship, number, and address.</li>
           <li><strong>Each sign-in:</strong> the time, the email address, the name, and whether the account is an admin.</li>
+          <li><strong>Each time your ID is scanned at the office or the guard post:</strong> the time, the place, your ID number, name, position, project, and the ID's status at that moment, and the account of the tablet that scanned it.</li>
         </ul>
 
         <h2>How we use it</h2>
         <ul>
           <li>To make, print, and update employee IDs.</li>
           <li>To let anyone who scans an ID's QR code check that the ID is real and still valid.</li>
+          <li>To keep a log of who comes to the office.</li>
           <li>The email address decides what you can open: the ID form only, or also the admin screens. It is also saved with each form as a record of which account sent it. One account may send forms for other people, so the email address is never used to tell who an ID belongs to.</li>
         </ul>
         <p>We do not sell your information, use it for ads, or share it with anyone outside the office.</p>
@@ -291,10 +293,11 @@
 
         <h2>Where it is kept</h2>
         <p>Records and photos are kept in Google Sheets and Google Drive in the office's Google account, and Google Apps Script handles them. This website holds no records. Google stores and processes the data for the office as the provider of these services, under the <a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google Privacy Policy</a>.</p>
+        <p>The office's scanning tablets use Google AppSheet. So that they work without internet, they keep a copy of each ID's number, name, position, project, status, valid-until date, and a small photo, and nothing else. They update that copy, and send their scans to the office's Google account, only when someone presses their Sync button.</p>
         <p>Your browser keeps you signed in until midnight, Philippine time, so that you do not have to sign in again. Admins' browsers also remember how they sort and filter records. This website uses no tracking or advertising cookies. Google's sign-in button may set Google's own cookies.</p>
 
         <h2>Who can see it</h2>
-        <p>Only the admins chosen by the office can open records, photos, requests, and the sign-in log. Employees see only the ID form and the results of what they send.</p>
+        <p>Only the admins chosen by the office can open records, photos, requests, and the sign-in log. Employees see only the ID form and the results of what they send. The office staff using a scanning tablet see the details above of the ID just scanned, and the office keeps the scan log in its Google account.</p>
 
         <h2>How long we keep it</h2>
         <p>Records stay in the office's Google account until an admin deletes them. Deleting a record also removes its photo, unless another record uses the same photo.</p>
