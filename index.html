@@ -432,6 +432,8 @@
   .fact-label { color: var(--text-muted); }
   .fact-value { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
   .fact-from { font-weight: 400; color: var(--text-muted); text-decoration: line-through; }
+  .fact-sub { display: block; margin-top: 2px; font-weight: 400; color: var(--text-muted); }
+  .fact-note { display: block; margin-top: 2px; font-weight: 600; color: var(--danger); }
   /* A picked change: ticked saves the new value, unticked keeps the printed one, so the strike moves to what is not saved. */
   .fact-pick { cursor: pointer; }
   .fact-pick .fact-label { display: flex; align-items: flex-start; gap: 8px; color: var(--text); font-weight: 600; }
@@ -3562,8 +3564,15 @@
       const photos = state.photos.get(request.requestId);
       const changes = request.changes.map((change) => renderChange(request, change)).join('');
       const current = request.currentIdNumber && !request.lookalike
-        ? renderFact('Current ID', `${escapeHtml(request.currentIdNumber)} (${escapeHtml(request.currentStatus)})`)
+        ? renderFact(isReactivation(request) ? 'ID to reactivate' : 'Current ID', describeId(request.currentIdNumber, request.currentStatus,
+          isReactivation(request) ? [request.currentPosition, request.currentProject] : []))
         : '';
+      const working = (request.workingIds || []).map((record) => renderFact('Working ID now', `${describeId(record.idNumber, record.status,
+        [record.position, record.project], record.dateIssued)} <span class="fact-note">Revoked when you approve.</span>`)).join('');
+      const workingNow = (request.workingIds || [])[0];
+      const position = workingNow && workingNow.position !== request.position
+        ? `<span class="fact-from">${escapeHtml(workingNow.position)}</span> <span class="fact-to">${escapeHtml(request.position)}</span>`
+        : escapeHtml(request.position);
       const lookalike = request.lookalike ? renderLookalike(request.lookalike) : '';
       const sentBy = request.submittedBy ? renderFact('Sent by', escapeHtml(request.submittedBy)) : '';
 
@@ -3578,7 +3587,8 @@
             <div class="detail-facts">
               ${lookalike}
               ${current}
-              ${renderFact('Position', escapeHtml(request.position))}
+              ${working}
+              ${renderFact('Position', position)}
               ${renderFact('Applying for', escapeHtml(request.project))}
               ${renderFact('Date of birth', escapeHtml(request.dob))}
               ${changes}
@@ -3587,6 +3597,18 @@
             </div>
           </div>
         </div>`;
+    }
+
+    /** A renewal or a return to an earlier position brings a REVOKED ID back into use. */
+    function isReactivation(request) {
+      return ['RENEWAL', 'RETURN TO POSITION'].includes(request.type) && request.currentStatus !== 'VALID';
+    }
+
+    /** An ID number and status, with its position, project, and date issued when given. */
+    function describeId(idNumber, status, details, dateIssued) {
+      const parts = (details || []).filter(Boolean).map(escapeHtml);
+      if (dateIssued) parts.push(`issued ${escapeHtml(dateIssued)}`);
+      return `${escapeHtml(idNumber)} (${escapeHtml(status)})${parts.length ? `<span class="fact-sub">${parts.join(' · ')}</span>` : ''}`;
     }
 
     /** The ID this request resembles, so that an admin can tell a typo from a different person. */
