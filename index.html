@@ -428,6 +428,15 @@
   .fact-label { color: var(--text-muted); }
   .fact-value { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
   .fact-from { font-weight: 400; color: var(--text-muted); text-decoration: line-through; }
+  /* A picked change: ticked saves the new value, unticked keeps the printed one, so the strike moves to what is not saved. */
+  .fact-pick { cursor: pointer; }
+  .fact-pick .fact-label { display: flex; align-items: flex-start; gap: 8px; color: var(--text); font-weight: 600; }
+  .fact-pick input, .photo-pick input { flex-shrink: 0; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--ink); cursor: pointer; }
+  .fact-pick.is-kept .fact-from { color: var(--text); font-weight: 600; text-decoration: none; }
+  .fact-pick.is-kept .fact-to { font-weight: 400; color: var(--text-muted); text-decoration: line-through; }
+  .photo-pick { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 32px; color: var(--text); cursor: pointer; }
+  .photo-kept .detail-photo:nth-child(2) .detail-photo-frame { opacity: 0.45; }
+  .card-note { font-weight: 700; }
   .show-more-row { padding: 8px 16px 12px; border-top: 1px solid var(--line); text-align: center; }
   .empty-state { padding: 56px 20px; text-align: center; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius-surface); }
   .empty-state .icon { width: 32px; height: 32px; margin-bottom: 10px; color: var(--ink); }
@@ -655,6 +664,8 @@
     .request-chevron { grid-column: 2; grid-row: 2; justify-self: end; }
     .request-actions { width: 100%; padding-left: 46px; }
     .request-actions .btn { flex: 1; min-height: 46px; }
+    .request-actions.has-choice { flex-wrap: wrap; }
+    .request-actions.has-choice .btn-danger-quiet { flex-basis: 100%; }
     .request-detail { padding: 2px 12px 16px; }
     .side-panel { width: 100%; }
     .panel-body { padding: 16px; }
@@ -1183,7 +1194,7 @@
         <h3>Admin manual</h3>
         <p>Signing in, approving requests, correcting records and photos, and printing IDs, with pictures of every screen.</p>
       </div>
-      <a class="btn btn-primary" href="guide.html?guide=admin" data-guide="admin">Open</a>
+      <a class="btn btn-quiet" href="guide.html?guide=admin" data-guide="admin">Open</a>
     </div>
     <div class="guide-row">
       <div>
@@ -3297,6 +3308,7 @@
       expandedGroups: new Set(),
       openDetails: new Set(),
       photos: new Map(),
+      picks: new Map(),
       pollTimer: null
     };
     let filterTabs = null;
@@ -3343,6 +3355,7 @@
       state.requests = [];
       state.selected.clear();
       state.photos.clear();
+      state.picks.clear();
       state.openDetails.clear();
       state.hasLoaded = false;
       state.isVisible = false;
@@ -3442,6 +3455,33 @@
       return escapeHtml(effect).replace(/SP-\d{4}-\d{4}/g, (idNumber) => `<span class="nowrap">${idNumber}</span>`);
     }
 
+    /* ---------- Picking which changes to use ---------- */
+
+    /**
+     * The printed details, and the photo, an admin has ticked for a request that would change an
+     * existing ID's card. Everything starts ticked, as sent. A request sent again, or a record
+     * changed meanwhile, has a new revision, so its picks start again.
+     */
+    function getPicks(request) {
+      const key = `${request.requestId}|${request.revision}`;
+      if (!state.picks.has(key)) {
+        const all = request.changes.filter((change) => change.printed).map((change) => change.field);
+        state.picks.set(key, new Set(request.hasNewPhoto ? all.concat('photo') : all));
+      }
+      return state.picks.get(key);
+    }
+
+    /** What approving does, plus whether the card must be printed again, from the ticks as they are now. */
+    function describeOutcome(request) {
+      if (!request.pickable || request.type === DUPLICATE) return renderEffect(request.effect);
+      const note = getPicks(request).size ? 'Print the card again.' : 'The printed card stays in use.';
+      return `${renderEffect(request.effect)} <strong class="card-note">${note}</strong>`;
+    }
+
+    function updateOutcome(row, request) {
+      row.querySelectorAll('.request-outcome, .request-effect > span').forEach((el) => { el.innerHTML = describeOutcome(request); });
+    }
+
     function renderFact(label, valueHtml) {
       return `<div class="fact-row"><span class="fact-label">${escapeHtml(label)}</span><span class="fact-value">${valueHtml}</span></div>`;
     }
@@ -3453,18 +3493,30 @@
       return `<div class="detail-photo"><div class="detail-photo-frame">${inner}</div>${escapeHtml(label)}${toolsHtml || ''}</div>`;
     }
 
-    function renderNewPhotoTools(photos) {
-      if (!photos || !photos.proposed) return '';
+    function renderNewPhotoTools(photos, request) {
+      const pick = request.pickable && request.hasNewPhoto
+        ? `<label class="photo-pick"><input type="checkbox" data-action="pick" data-field="photo" ${getPicks(request).has('photo') ? 'checked' : ''}> Use</label>`
+        : '';
+      if (!photos || !photos.proposed) return pick;
       const note = photos.proposedNotSquare ? '<div class="crop-note">Not 1x1</div>' : '';
-      return `${note}<button class="link-button" type="button" data-action="adjust-photo">Adjust</button>`;
+      return `${pick}${note}<button class="link-button" type="button" data-action="adjust-photo">Adjust</button>`;
+    }
+
+    /** A changed detail. On a request picked one by one, a printed detail gets a tick: ticked uses the new value, unticked keeps the printed one. */
+    function renderChange(request, change) {
+      const value = `${change.from ? `<span class="fact-from">${escapeHtml(change.from)}</span> ` : ''}<span class="fact-to">${escapeHtml(change.to)}</span>`;
+      if (!request.pickable || !change.printed) return renderFact(change.label, value);
+      const used = getPicks(request).has(change.field);
+      return `
+        <label class="fact-row fact-pick ${used ? '' : 'is-kept'}">
+          <span class="fact-label"><input type="checkbox" data-action="pick" data-field="${escapeHtml(change.field)}" ${used ? 'checked' : ''}> ${escapeHtml(change.label)}</span>
+          <span class="fact-value">${value}</span>
+        </label>`;
     }
 
     function renderDetail(request) {
       const photos = state.photos.get(request.requestId);
-      const changes = request.changes.map((change) => renderFact(
-        change.label,
-        `${change.from ? `<span class="fact-from">${escapeHtml(change.from)}</span> ` : ''}${escapeHtml(change.to)}`
-      )).join('');
+      const changes = request.changes.map((change) => renderChange(request, change)).join('');
       const current = request.currentIdNumber && !request.lookalike
         ? renderFact('Current ID', `${escapeHtml(request.currentIdNumber)} (${escapeHtml(request.currentStatus)})`)
         : '';
@@ -3473,11 +3525,11 @@
 
       return `
         <div class="request-detail">
-          <div class="request-effect">${iconHtml('arrow-right')}<span>${renderEffect(request.effect)}</span></div>
+          <div class="request-effect">${iconHtml('arrow-right')}<span>${describeOutcome(request)}</span></div>
           <div class="detail-columns">
-            <div class="detail-photos">
+            <div class="detail-photos ${request.pickable && request.hasNewPhoto && !getPicks(request).has('photo') ? 'photo-kept' : ''}">
               ${renderPhotoFrame('Current', photos ? photos.current : '', !photos)}
-              ${renderPhotoFrame(request.hasNewPhoto ? 'New' : 'No new photo', photos ? photos.proposed : '', !photos && request.hasNewPhoto, renderNewPhotoTools(photos))}
+              ${renderPhotoFrame(request.hasNewPhoto ? 'New' : 'No new photo', photos ? photos.proposed : '', !photos && request.hasNewPhoto, renderNewPhotoTools(photos, request))}
             </div>
             <div class="detail-facts">
               ${lookalike}
@@ -3505,6 +3557,11 @@
         </div>`;
     }
 
+    /** A possible duplicate, or a request whose printed details are picked one by one, is decided one at a time. */
+    function needsOwnChoice(request) {
+      return request.type === DUPLICATE || request.pickable;
+    }
+
     function renderActions(request) {
       if (request.type === DUPLICATE) {
         return `
@@ -3520,20 +3577,22 @@
     function renderRow(request) {
       const id = escapeHtml(request.requestId);
       const isOpen = state.openDetails.has(request.requestId);
-      const isDuplicate = request.type === DUPLICATE;
-      const checkTitle = isDuplicate ? 'Check this one by itself: correct the existing ID, or give a new one' : '';
+      const ownChoice = needsOwnChoice(request);
+      let checkTitle = '';
+      if (request.type === DUPLICATE) checkTitle = 'Check this one by itself: correct the existing ID, or give a new one';
+      else if (request.pickable) checkTitle = 'Check this one by itself: pick which changes to use';
       return `
         <article class="request-row ${isOpen ? 'is-open' : ''}" data-request-id="${id}">
           <div class="request-line">
-            <label class="check-hit" title="${checkTitle}"><input type="checkbox" data-action="select" aria-label="Select ${escapeHtml(formatName(request))}" ${state.selected.has(request.requestId) ? 'checked' : ''} ${isDuplicate ? 'disabled' : ''}></label>
+            <label class="check-hit" title="${checkTitle}"><input type="checkbox" data-action="select" aria-label="Select ${escapeHtml(formatName(request))}" ${state.selected.has(request.requestId) ? 'checked' : ''} ${ownChoice ? 'disabled' : ''}></label>
             <button class="request-main" type="button" data-action="details" aria-expanded="${isOpen}">
               <span><span class="request-name">${escapeHtml(formatName(request))}</span><span class="request-position">${escapeHtml(request.position)}</span></span>
-              <span class="request-outcome">${renderEffect(request.effect)}</span>
+              <span class="request-outcome">${describeOutcome(request)}</span>
               <span class="type-chip">${escapeHtml(TYPE_LABELS[request.type] || request.type)}</span>
               <span class="request-time">${escapeHtml(formatAge(request.requestedAt))}</span>
               <svg class="icon request-chevron" aria-hidden="true"><use href="#i-chevron-down"/></svg>
             </button>
-            <div class="request-actions ${isDuplicate ? 'has-choice' : ''}">${renderActions(request)}</div>
+            <div class="request-actions ${request.type === DUPLICATE ? 'has-choice' : ''}">${renderActions(request)}</div>
           </div>
           <div class="t-acc-panel"><div class="t-acc-inner">${isOpen ? renderDetail(request) : ''}</div></div>
         </article>`;
@@ -3544,7 +3603,7 @@
       const isExpanded = state.expandedGroups.has(project);
       const visible = isExpanded ? requests : requests.slice(0, ROWS_PER_GROUP);
       const hiddenCount = requests.length - visible.length;
-      const selectable = requests.filter((request) => request.type !== DUPLICATE);
+      const selectable = requests.filter((request) => !needsOwnChoice(request));
       const allSelected = selectable.length > 0 && selectable.every((request) => state.selected.has(request.requestId));
       const label = escapeHtml(project);
 
@@ -3603,23 +3662,32 @@
         .filter(Boolean);
     }
 
-    /** Sends decisions in batches, then removes the decided rows from the list. `choice` answers a possible duplicate. */
-    async function decide(functionName, ids, choice) {
+    /**
+     * Sends decisions in batches, then removes the decided rows from the list. `choice` answers a
+     * possible duplicate, and `picks` says which changes to use on one request. A request the server
+     * left waiting stays, and the list is read again, because its records changed meanwhile.
+     */
+    async function decide(functionName, ids, choice, picks) {
       const messages = [];
+      const waiting = new Set();
       for (let start = 0; start < ids.length; start += DECISION_BATCH_SIZE) {
         const batch = ids.slice(start, start + DECISION_BATCH_SIZE);
-        const response = choice
-          ? await Admin.callAdmin(functionName, batch, choice)
-          : await Admin.callAdmin(functionName, batch);
+        let response;
+        if (picks) response = await Admin.callAdmin(functionName, batch, choice || null, picks);
+        else if (choice) response = await Admin.callAdmin(functionName, batch, choice);
+        else response = await Admin.callAdmin(functionName, batch);
         messages.push(response.message);
         if (!response.success) throw new Error(response.message);
+        (response.waitingIds || []).forEach((id) => waiting.add(id));
       }
 
-      await Motion.removeRows(findRows(ids));
-      const decided = new Set(ids);
+      const decidedIds = ids.filter((id) => !waiting.has(id));
+      await Motion.removeRows(findRows(decidedIds));
+      const decided = new Set(decidedIds);
       state.requests = state.requests.filter((request) => !decided.has(request.requestId));
       ids.forEach((id) => {
         state.selected.delete(id);
+        if (!decided.has(id)) return;
         state.openDetails.delete(id);
         state.photos.delete(id);
       });
@@ -3627,12 +3695,13 @@
       render();
       showToast(messages.join(' '));
       Admin.markStale();
+      if (waiting.size) fetchRequests();
     }
 
-    async function runDecision(button, busyLabel, functionName, ids, choice) {
+    async function runDecision(button, busyLabel, functionName, ids, choice, picks) {
       setButtonBusy(button, true, busyLabel);
       try {
-        await decide(functionName, ids, choice);
+        await decide(functionName, ids, choice, picks);
       } catch (err) {
         if (err.message !== Admin.SESSION_EXPIRED) {
           showToast(err.message || 'That could not be saved. Please try again.');
@@ -3712,7 +3781,15 @@
       if (action === 'retry') fetchRequests();
       if (action === 'details') toggleDetails(row, id);
       if (action === 'adjust-photo') adjustRequestPhoto(row, id);
-      if (action === 'approve') runDecision(trigger, 'Approving...', 'approveRequests', [id], trigger.dataset.choice);
+      if (action === 'approve') {
+        const request = findRequest(id);
+        const choice = trigger.dataset.choice;
+        // New ID gives a new number from what was sent, so picks apply only to updating an existing ID.
+        const picks = request && request.pickable && choice !== 'new'
+          ? { requestId: id, revision: request.revision, use: [...getPicks(request)] }
+          : null;
+        runDecision(trigger, 'Approving...', 'approveRequests', [id], choice, picks);
+      }
       if (action === 'decline' && !needsConfirmation(trigger)) runDecision(trigger, 'Declining...', 'declineRequests', [id]);
       if (action === 'toggle-group') {
         const project = group.dataset.project;
@@ -3730,6 +3807,18 @@
 
     function handleListChange(event) {
       const action = event.target.dataset.action;
+      if (action === 'pick') {
+        const row = event.target.closest('[data-request-id]');
+        const request = findRequest(row.dataset.requestId);
+        const picks = getPicks(request);
+        const field = event.target.dataset.field;
+        if (event.target.checked) picks.add(field);
+        else picks.delete(field);
+        const holder = field === 'photo' ? event.target.closest('.detail-photos') : event.target.closest('.fact-pick');
+        holder.classList.toggle(field === 'photo' ? 'photo-kept' : 'is-kept', !event.target.checked);
+        updateOutcome(row, request);
+        return;
+      }
       if (action === 'select') {
         const id = event.target.closest('[data-request-id]').dataset.requestId;
         if (event.target.checked) state.selected.add(id);
@@ -3739,7 +3828,7 @@
       if (action === 'select-group') {
         const project = event.target.closest('[data-project]').dataset.project;
         getVisibleRequests()
-          .filter((request) => escapeHtml(request.project) === escapeHtml(project) && request.type !== DUPLICATE)
+          .filter((request) => escapeHtml(request.project) === escapeHtml(project) && !needsOwnChoice(request))
           .forEach((request) => {
             if (event.target.checked) state.selected.add(request.requestId);
             else state.selected.delete(request.requestId);
